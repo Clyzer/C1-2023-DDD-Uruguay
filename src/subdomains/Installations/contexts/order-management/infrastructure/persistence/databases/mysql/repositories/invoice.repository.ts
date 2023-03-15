@@ -30,10 +30,7 @@ export class InvoiceRepository
     }
 
     async create(entity: InvoiceMySqlEntity): Promise<InvoiceMySqlEntity> {
-        const invoice = await this.repository.findOneBy({ invoiceId: entity.invoiceId , deletedAt: undefined });
-        if (invoice) throw new BadRequestException(`Invoice with id: ${entity.invoiceId} already exists`)
-
-        return await this.repository.save(entity)
+        return await this.repository.save(entity);
     }
 
     async update(invoiceId: string, entity: InvoiceMySqlEntity): Promise<InvoiceMySqlEntity> {

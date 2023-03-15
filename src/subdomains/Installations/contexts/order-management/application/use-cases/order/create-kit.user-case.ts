@@ -6,10 +6,12 @@ import {
 import { OrderAggregate } from '../../../domain/aggregates';
 import { KitDomainEntityBase } from '../../../domain/entities';
 import { IKitDomainEntity } from '../../../domain/entities/interfaces';
-import { CreatedOrderEventPublisherBase } from '../../../domain/events';
+import {
+  OrderKitCreatedEventPublisherBase,
+} from '../../../domain/events/publishers/order';
 import { ICreateKitCommand } from '../../../domain/interfaces/commands/order';
 import { ICreateKitResponse } from '../../../domain/interfaces/responses/order';
-import { IOrderDomainService } from '../../../domain/services';
+import { IKitDomainService } from '../../../domain/services/order';
 import { KitModelValueObject } from '../../../domain/value-objects';
 
 export class CreateKitUseCase<
@@ -22,13 +24,13 @@ export class CreateKitUseCase<
   private readonly orderAggregateRoot: OrderAggregate;
 
   constructor(
-    private readonly orderService: IOrderDomainService,
-    private readonly createdOrderEventPublisherBase: CreatedOrderEventPublisherBase
+    private readonly kitService: IKitDomainService,
+    private readonly orderKitCreatedEventPublisherBase: OrderKitCreatedEventPublisherBase
   ) {
     super();
     this.orderAggregateRoot = new OrderAggregate({
-      orderService,
-      createdOrderEventPublisherBase,
+      kitService,
+      orderKitCreatedEventPublisherBase,
     });
   }
 

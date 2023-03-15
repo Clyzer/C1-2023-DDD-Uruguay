@@ -1,9 +1,7 @@
 import { EventPublisherBase } from 'src/libs';
 
-import { FeeDomainEntityBase } from '../../../entities/invoice';
-
 export abstract class InvoiceFeeDeletedEventPublisherBase<
-  Response = FeeDomainEntityBase
+  Response = boolean
 > extends EventPublisherBase<Response> {
   publish<Result = any>(): Promise<Result> {
     return this.emit(

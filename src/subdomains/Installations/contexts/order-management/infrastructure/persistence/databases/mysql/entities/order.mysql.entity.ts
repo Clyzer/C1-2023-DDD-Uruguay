@@ -33,8 +33,8 @@ export class OrderMySqlEntity extends OrderDomainEntityBase {
   createdAt: number;
 
   @Column({type: 'bigint', nullable: true})
-  updatedAt: number;
+  updatedAt?: number;
 
   @Column({type: 'bigint', nullable: true})
-  deletedAt: number;
+  deletedAt?: number;
 }

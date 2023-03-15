@@ -1,9 +1,7 @@
 import { EventPublisherBase } from 'src/libs';
 
-import { OrderDomainEntityBase } from '../../entities';
-
 export abstract class DeletedOrderEventPublisherBase<
-  Response = OrderDomainEntityBase
+  Response = boolean
 > extends EventPublisherBase<Response> {
   publish<Result = any>(): Promise<Result> {
     return this.emit(

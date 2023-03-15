@@ -1,9 +1,7 @@
-import { EventPublisherBase } from "src/libs";
-
-import { InvoiceStatusValueObject } from "../../../value-objects/invoice";
+import { EventPublisherBase } from 'src/libs';
 
 export abstract class InvoiceStatusChangedEventPublisherBase<
-  Response = InvoiceStatusValueObject
+  Response = boolean
 > extends EventPublisherBase<Response> {
   publish<Result = any>(): Promise<Result> {
     return this.emit(

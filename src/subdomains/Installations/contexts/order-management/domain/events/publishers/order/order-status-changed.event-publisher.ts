@@ -1,9 +1,7 @@
-import { EventPublisherBase } from "src/libs";
-
-import { OrderStatusValueObject } from "../../../value-objects/order";
+import { EventPublisherBase } from 'src/libs';
 
 export abstract class OrderStatusChangedEventPublisherBase<
-  Response = OrderStatusValueObject
+  Response = boolean
 > extends EventPublisherBase<Response> {
   publish<Result = any>(): Promise<Result> {
     return this.emit(

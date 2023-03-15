@@ -30,10 +30,7 @@ export class OrderRepository
     }
 
     async create(entity: OrderMySqlEntity): Promise<OrderMySqlEntity> {
-        const order = await this.repository.findOneBy({ orderId: entity.orderId , deletedAt: undefined });
-        if (order) throw new BadRequestException(`Order with id: ${entity.orderId} already exists`)
-
-        return await this.repository.save(entity)
+        return await this.repository.save(entity);
     }
 
     async update(orderId: string, entity: OrderMySqlEntity): Promise<OrderMySqlEntity> {

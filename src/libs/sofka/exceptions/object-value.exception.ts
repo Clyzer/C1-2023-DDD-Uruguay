@@ -6,6 +6,7 @@ export class ValueObjectException extends Error {
   constructor(message: string, errors: Array<IErrorValueObject>) {
     super(message);
     this._errors = errors;
+    console.log(this._errors);
   }
 
   get errors(): Array<IErrorValueObject> {

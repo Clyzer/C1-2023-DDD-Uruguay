@@ -1,9 +1,9 @@
-import { ValueObjectBase } from "src/libs/";
+import { ValueObjectBase } from 'src/libs/';
 import {
   IsString,
   StringMaxLength,
   StringMinLength,
-} from "src/libs/validations";
+} from 'src/libs/validations';
 
 export class BenefitedNameValueObject extends ValueObjectBase<string> {
   constructor(value?: string) {
@@ -15,7 +15,7 @@ export class BenefitedNameValueObject extends ValueObjectBase<string> {
   }
 
   private validateStructure(): void {
-    if (this.value && IsString(this.value)) {
+    if (this.value && !IsString(this.value)) {
       const error = {
         field: "BenefitedName",
         message: "Name of benefited don't contains a string",

@@ -30,10 +30,7 @@ export class EmployedRepository
     }
 
     async create(entity: EmployedMySqlEntity): Promise<EmployedMySqlEntity> {
-        const employed = await this.repository.findOneBy({ employedId: entity.employedId , deletedAt: undefined });
-        if (employed) throw new BadRequestException(`Employed with id: ${entity.employedId} already exists`)
-
-        return await this.repository.save(entity)
+        return await this.repository.save(entity);
     }
 
     async update(employedId: string, entity: EmployedMySqlEntity): Promise<EmployedMySqlEntity> {

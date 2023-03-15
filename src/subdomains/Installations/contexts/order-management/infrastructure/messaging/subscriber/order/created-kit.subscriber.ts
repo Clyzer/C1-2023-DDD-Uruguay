@@ -6,14 +6,14 @@ import {
   Payload,
 } from '@nestjs/microservices';
 
-import { InvoiceEntity } from '../../persistence';
-import { EventEntity } from '../../persistence/entities/event.entity';
-import { InvoiceService } from '../../persistence/services';
+import { KitEntity } from '../../../persistence';
+import { EventEntity } from '../../../persistence/entities/event.entity';
+import { KitService } from '../../../persistence/services';
 
 @Controller()
-export class CreatedInvoiceController{
+export class CreatedKitController{
 
-    constructor(private readonly invoiceService: InvoiceService){}
+    constructor(private readonly kitService: KitService){}
 
     /**
      * EventPattern se utiliza para definir un patrón de evento de Kafka
@@ -30,10 +30,10 @@ export class CreatedInvoiceController{
      * 
      * @param {*} data
      * @param {KafkaContext} context
-     * @memberof CreatedInvoiceController
+     * @memberof CreatedKitController
      */
-    @EventPattern('order_management.created_invoice')
-    createdInvoice(@Payload() data: EventEntity, @Ctx() context: KafkaContext){
+    @EventPattern('order_management.order.kit_created')
+    createdKit(@Payload() data: EventEntity, @Ctx() context: KafkaContext){
 
         console.log('--------------------------------------')
         console.log('Data: ', data.data)
@@ -41,8 +41,7 @@ export class CreatedInvoiceController{
         console.log('Context: ', context)
         console.log('--------------------------------------')
 
-        const object: InvoiceEntity = JSON.parse(JSON.stringify(data.data));
-        this.invoiceService.createInvoice(object);
-
+        const object: KitEntity = JSON.parse(JSON.stringify(data.data));
+        this.kitService.createKit(object);
     }
 }

@@ -9,8 +9,10 @@ import {
   GettedInvoicePublisher,
   GettedOrderPublisher,
 } from './publisher';
+import { CreatedKitPublisher } from './publisher/order';
 import {
   CreatedInvoiceController,
+  CreatedKitController,
   CreatedOrderController,
 } from './subscriber';
 
@@ -49,8 +51,8 @@ import {
         ]),
         PersistenceModule
     ],
-    controllers: [CreatedInvoiceController, CreatedOrderController],
-    providers: [CreatedInvoicePublisher, CreatedOrderPublisher, GettedInvoicePublisher, GettedOrderPublisher],
-    exports: [CreatedInvoicePublisher, CreatedOrderPublisher, GettedInvoicePublisher, GettedOrderPublisher]
+    controllers: [CreatedInvoiceController, CreatedOrderController, CreatedKitController],
+    providers: [CreatedInvoicePublisher, CreatedOrderPublisher, CreatedKitPublisher, GettedInvoicePublisher, GettedOrderPublisher],
+    exports: [CreatedInvoicePublisher, CreatedOrderPublisher, CreatedKitPublisher, GettedInvoicePublisher, GettedOrderPublisher]
 })
 export class MessagingModule { }

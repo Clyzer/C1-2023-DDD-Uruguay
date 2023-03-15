@@ -30,10 +30,7 @@ export class BenefitedRepository
     }
 
     async create(entity: BenefitedMySqlEntity): Promise<BenefitedMySqlEntity> {
-        const benefited = await this.repository.findOneBy({ benefitedId: entity.benefitedId , deletedAt: undefined });
-        if (benefited) throw new BadRequestException(`Benefited with id: ${entity.benefitedId} already exists`)
-
-        return await this.repository.save(entity)
+        return await this.repository.save(entity);
     }
 
     async update(benefitedId: string, entity: BenefitedMySqlEntity): Promise<BenefitedMySqlEntity> {

@@ -30,10 +30,7 @@ export class FeeRepository
     }
 
     async create(entity: FeeMySqlEntity): Promise<FeeMySqlEntity> {
-        const fee = await this.repository.findOneBy({ feeId: entity.feeId , deletedAt: undefined });
-        if (fee) throw new BadRequestException(`Fee with id: ${entity.feeId} already exists`)
-
-        return await this.repository.save(entity)
+        return await this.repository.save(entity);
     }
 
     async update(feeId: string, entity: FeeMySqlEntity): Promise<FeeMySqlEntity> {

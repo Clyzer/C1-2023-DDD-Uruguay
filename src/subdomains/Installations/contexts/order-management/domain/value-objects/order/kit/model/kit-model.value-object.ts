@@ -1,9 +1,9 @@
-import { ValueObjectBase } from "src/libs/";
+import { ValueObjectBase } from 'src/libs/';
 import {
   IsString,
   StringMaxLength,
   StringMinLength,
-} from "src/libs/validations";
+} from 'src/libs/validations';
 
 export class KitModelValueObject extends ValueObjectBase<string> {
   constructor(value?: string) {
@@ -15,7 +15,7 @@ export class KitModelValueObject extends ValueObjectBase<string> {
   }
 
   private validateStructure(): void {
-    if (this.value && IsString(this.value)) {
+    if (this.value && !IsString(this.value)) {
       const error = {
         field: "KitModel",
         message: "Model of kit don't contains a string",

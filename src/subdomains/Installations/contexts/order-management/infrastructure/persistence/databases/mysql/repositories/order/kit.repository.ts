@@ -30,10 +30,7 @@ export class KitRepository
     }
 
     async create(entity: KitMySqlEntity): Promise<KitMySqlEntity> {
-        const kit = await this.repository.findOneBy({ kitId: entity.kitId , deletedAt: undefined });
-        if (kit) throw new BadRequestException(`Kit with id: ${entity.kitId} already exists`)
-
-        return await this.repository.save(entity)
+        return await this.repository.save(entity);
     }
 
     async update(kitId: string, entity: KitMySqlEntity): Promise<KitMySqlEntity> {

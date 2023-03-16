@@ -10,7 +10,10 @@ import { IEventPublisher } from '../../../../../../../../libs/sofka';
 import {
   OrderKitCreatedEventPublisherBase,
 } from '../../../../domain/events/publishers/order';
-import { KitEntity } from '../../../persistence/entities';
+import {
+  EventEntity,
+  KitEntity,
+} from '../../../persistence/entities';
 
 @Injectable()
 export class CreatedKitPublisher extends OrderKitCreatedEventPublisherBase {
@@ -46,8 +49,8 @@ export class CreatedKitPublisher extends OrderKitCreatedEventPublisherBase {
      * @return {*}  {Promise<Result>}
      * @memberof CreateKitPublisher
      */
-    emit<Result = any, Input = KitEntity>(
-        pattern: any,
+    emit<Result = EventEntity, Input = KitEntity>(
+        pattern: EventEntity,
         data: Input,
     ): Promise<Result> {
         return lastValueFrom<Result>(this.proxy.emit(pattern, data));

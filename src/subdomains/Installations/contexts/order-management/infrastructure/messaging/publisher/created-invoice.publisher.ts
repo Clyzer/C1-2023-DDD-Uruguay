@@ -10,7 +10,10 @@ import { IEventPublisher } from '../../../../../../../libs/sofka';
 import {
   CreatedInvoiceEventPublisherBase,
 } from '../../../domain/events/publishers';
-import { InvoiceEntity } from '../../persistence/entities';
+import {
+  EventEntity,
+  InvoiceEntity,
+} from '../../persistence/entities';
 
 @Injectable()
 export class CreatedInvoicePublisher extends CreatedInvoiceEventPublisherBase {
@@ -46,8 +49,8 @@ export class CreatedInvoicePublisher extends CreatedInvoiceEventPublisherBase {
      * @return {*}  {Promise<Result>}
      * @memberof CreateOrderPublisher
      */
-    emit<Result = any, Input = InvoiceEntity>(
-        pattern: any,
+    emit<Result = EventEntity, Input = InvoiceEntity>(
+        pattern: EventEntity,
         data: Input,
     ): Promise<Result> {
         return lastValueFrom<Result>(this.proxy.emit(pattern, data));

@@ -20,7 +20,9 @@ export abstract class ValueObjectBase<Type> {
    */
   constructor(value?: Type) {
     this._errors = new Array<IErrorValueObject>();
-    if (value) this._value = value;
+    // Error in library
+    //if (value) this._value = value;
+    if (value || typeof value == 'boolean') this._value = value;
     this.validateData();
   }
 

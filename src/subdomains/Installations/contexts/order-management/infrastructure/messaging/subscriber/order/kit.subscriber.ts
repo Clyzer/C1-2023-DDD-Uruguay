@@ -76,6 +76,7 @@ export class KitController {
     console.log('--------------------------------------');
 
     const object: KitEntity = JSON.parse(JSON.stringify(data.data));
+    console.log(object);
     this.kitService.updateKitModel(object.kitId, object);
   }
 }

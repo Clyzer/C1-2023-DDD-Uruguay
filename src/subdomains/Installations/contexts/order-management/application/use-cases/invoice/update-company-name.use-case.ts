@@ -6,9 +6,16 @@ import {
 import { InvoiceAggregate } from '../../../domain/aggregates';
 import { ICompanyDomainEntity } from '../../../domain/entities/interfaces';
 import { CompanyDomainEntityBase } from '../../../domain/entities/invoice';
-import { InvoiceCompanyNameUpdatedEventPublisherBase } from '../../../domain/events/publishers/invoice';
-import { IUpdateCompanyNameCommand } from '../../../domain/interfaces/commands/invoice';
-import { IUpdateCompanyNameResponse } from '../../../domain/interfaces/responses/invoice';
+import {
+  InvoiceCompanyGettedEventPublisherBase,
+  InvoiceCompanyNameUpdatedEventPublisherBase,
+} from '../../../domain/events/publishers/invoice';
+import {
+  IUpdateCompanyNameCommand,
+} from '../../../domain/interfaces/commands/invoice';
+import {
+  IUpdateCompanyNameResponse,
+} from '../../../domain/interfaces/responses/invoice';
 import { ICompanyDomainService } from '../../../domain/services/invoice';
 import {
   CompanyBankAccountValueObject,
@@ -28,11 +35,13 @@ export class UpdateCompanyNameUserCase<
   constructor(
     private readonly companyService: ICompanyDomainService,
     private readonly invoiceCompanyNameUpdatedEventPublisherBase: InvoiceCompanyNameUpdatedEventPublisherBase,
+    private readonly invoiceCompanyGettedEventPublisherBase: InvoiceCompanyGettedEventPublisherBase,
   ) {
     super();
     this.invoiceAggregateRoot = new InvoiceAggregate({
       companyService,
       invoiceCompanyNameUpdatedEventPublisherBase,
+      invoiceCompanyGettedEventPublisherBase
     });
   }
 
@@ -49,7 +58,7 @@ export class UpdateCompanyNameUserCase<
       command.companyId.valueOf(),
     );
     this.validateEntity(company);
-    company.name = new CompanyNameValueObject(command.name.valueOf());
+    company.name = command.name.valueOf();
     return await this.executeInvoiceAggregateRoot(
       company.companyId.valueOf(),
       company,

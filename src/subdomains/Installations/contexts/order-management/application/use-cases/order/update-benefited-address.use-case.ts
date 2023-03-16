@@ -6,9 +6,16 @@ import {
 import { OrderAggregate } from '../../../domain/aggregates';
 import { IBenefitedDomainEntity } from '../../../domain/entities/interfaces';
 import { BenefitedDomainEntityBase } from '../../../domain/entities/order';
-import { OrderBenefitedAddressUpdatedEventPublisherBase } from '../../../domain/events/publishers/order';
-import { IUpdateBenefitedAddressCommand } from '../../../domain/interfaces/commands/order';
-import { IUpdateBenefitedAddressResponse } from '../../../domain/interfaces/responses/order';
+import {
+  OrderBenefitedAddressUpdatedEventPublisherBase,
+  OrderBenefitedGettedEventPublisherBase,
+} from '../../../domain/events/publishers/order';
+import {
+  IUpdateBenefitedAddressCommand,
+} from '../../../domain/interfaces/commands/order';
+import {
+  IUpdateBenefitedAddressResponse,
+} from '../../../domain/interfaces/responses/order';
 import { IBenefitedDomainService } from '../../../domain/services/order';
 import {
   BenefitedAddressValueObject,
@@ -30,11 +37,13 @@ export class UpdateBenefitedAddressUserCase<
   constructor(
     private readonly benefitedService: IBenefitedDomainService,
     private readonly orderBenefitedAddressUpdatedEventPublisherBase: OrderBenefitedAddressUpdatedEventPublisherBase,
+    private readonly orderBenefitedGettedEventPublisherBase: OrderBenefitedGettedEventPublisherBase,
   ) {
     super();
     this.orderAggregateRoot = new OrderAggregate({
       benefitedService,
       orderBenefitedAddressUpdatedEventPublisherBase,
+      orderBenefitedGettedEventPublisherBase
     });
   }
 
@@ -51,9 +60,7 @@ export class UpdateBenefitedAddressUserCase<
       command.benefitedId.valueOf(),
     );
     this.validateEntity(benefited);
-    benefited.address = new BenefitedAddressValueObject(
-      command.address.valueOf(),
-    );
+    benefited.address = command.address.valueOf();
     return await this.executeOrderAggregateRoot(
       benefited.benefitedId.valueOf(),
       benefited,

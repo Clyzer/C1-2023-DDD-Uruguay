@@ -6,9 +6,16 @@ import {
 import { OrderAggregate } from '../../../domain/aggregates';
 import { IEmployedDomainEntity } from '../../../domain/entities/interfaces';
 import { EmployedDomainEntityBase } from '../../../domain/entities/order';
-import { OrderEmployedNameUpdatedEventPublisherBase } from '../../../domain/events/publishers/order';
-import { IUpdateEmployedNameCommand } from '../../../domain/interfaces/commands/order';
-import { IUpdateEmployedNameResponse } from '../../../domain/interfaces/responses/order';
+import {
+  OrderEmployedGettedEventPublisherBase,
+  OrderEmployedNameUpdatedEventPublisherBase,
+} from '../../../domain/events/publishers/order';
+import {
+  IUpdateEmployedNameCommand,
+} from '../../../domain/interfaces/commands/order';
+import {
+  IUpdateEmployedNameResponse,
+} from '../../../domain/interfaces/responses/order';
 import { IEmployedDomainService } from '../../../domain/services/order';
 import {
   EmployedIdValueObject,
@@ -28,11 +35,13 @@ export class UpdateEmployedNameUserCase<
   constructor(
     private readonly employedService: IEmployedDomainService,
     private readonly orderEmployedNameUpdatedEventPublisherBase: OrderEmployedNameUpdatedEventPublisherBase,
+    private readonly orderEmployedGettedEventPublisherBase: OrderEmployedGettedEventPublisherBase,
   ) {
     super();
     this.orderAggregateRoot = new OrderAggregate({
       employedService,
       orderEmployedNameUpdatedEventPublisherBase,
+      orderEmployedGettedEventPublisherBase
     });
   }
 
@@ -49,7 +58,7 @@ export class UpdateEmployedNameUserCase<
       command.employedId.valueOf(),
     );
     this.validateEntity(employed);
-    employed.name = new EmployedNameValueObject(command.name.valueOf());
+    employed.name = command.name.valueOf();
     return await this.executeOrderAggregateRoot(
       employed.employedId.valueOf(),
       employed,

@@ -1,4 +1,8 @@
-import { Body, Controller, Post } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Post,
+} from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 
 import {
@@ -68,6 +72,7 @@ export class CompanyController {
     const useCase = new UpdateCompanyNameUserCase(
       this.companyService,
       this.nameUpdatedCompanyPublisher,
+      this.gettedCompanyPublisher
     );
     return await useCase.execute(command);
   }
@@ -79,6 +84,7 @@ export class CompanyController {
     const useCase = new UpdateCompanyBankAccountUserCase(
       this.companyService,
       this.bankAccountUpdatedCompanyPublisher,
+      this.gettedCompanyPublisher
     );
     return await useCase.execute(command);
   }

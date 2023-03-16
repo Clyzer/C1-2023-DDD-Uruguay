@@ -1,4 +1,8 @@
-import { Body, Controller, Post } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Post,
+} from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 
 import {
@@ -76,6 +80,7 @@ export class BenefitedController {
     const useCase = new UpdateBenefitedNameUserCase(
       this.benefitedService,
       this.nameUpdatedBenefitedPublisher,
+      this.gettedBenefitedPublisher
     );
     return await useCase.execute(command);
   }
@@ -85,6 +90,7 @@ export class BenefitedController {
     const useCase = new UpdateBenefitedPhoneUserCase(
       this.benefitedService,
       this.phoneUpdatedBenefitedPublisher,
+      this.gettedBenefitedPublisher
     );
     return await useCase.execute(command);
   }
@@ -94,6 +100,7 @@ export class BenefitedController {
     const useCase = new UpdateBenefitedAddressUserCase(
       this.benefitedService,
       this.addressUpdatedBenefitedPublisher,
+      this.gettedBenefitedPublisher
     );
     return await useCase.execute(command);
   }
@@ -105,6 +112,7 @@ export class BenefitedController {
     const useCase = new UpdateBenefitedCompanyIdUserCase(
       this.benefitedService,
       this.companyIdUpdatedBenefitedPublisher,
+      this.gettedBenefitedPublisher
     );
     return await useCase.execute(command);
   }

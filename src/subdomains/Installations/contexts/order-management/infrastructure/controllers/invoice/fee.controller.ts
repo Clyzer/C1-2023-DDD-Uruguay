@@ -1,4 +1,8 @@
-import { Body, Controller, Post } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Post,
+} from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 
 import {
@@ -68,6 +72,7 @@ export class FeeController {
     const useCase = new UpdateFeeTaxUserCase(
       this.feeService,
       this.taxUpdatedFeePublisher,
+      this.gettedFeePublisher
     );
     return await useCase.execute(command);
   }
@@ -77,6 +82,7 @@ export class FeeController {
     const useCase = new UpdateFeeChargeUserCase(
       this.feeService,
       this.chargeUpdatedFeePublisher,
+      this.gettedFeePublisher
     );
     return await useCase.execute(command);
   }

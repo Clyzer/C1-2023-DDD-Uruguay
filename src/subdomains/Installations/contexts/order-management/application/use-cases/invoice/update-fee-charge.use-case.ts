@@ -6,9 +6,16 @@ import {
 import { InvoiceAggregate } from '../../../domain/aggregates';
 import { IFeeDomainEntity } from '../../../domain/entities/interfaces';
 import { FeeDomainEntityBase } from '../../../domain/entities/invoice';
-import { InvoiceFeeChargeUpdatedEventPublisherBase } from '../../../domain/events/publishers/invoice';
-import { IUpdateFeeChargeCommand } from '../../../domain/interfaces/commands/invoice';
-import { IUpdateFeeChargeResponse } from '../../../domain/interfaces/responses/invoice';
+import {
+  InvoiceFeeChargeUpdatedEventPublisherBase,
+  InvoiceFeeGettedEventPublisherBase,
+} from '../../../domain/events/publishers/invoice';
+import {
+  IUpdateFeeChargeCommand,
+} from '../../../domain/interfaces/commands/invoice';
+import {
+  IUpdateFeeChargeResponse,
+} from '../../../domain/interfaces/responses/invoice';
 import { IFeeDomainService } from '../../../domain/services/invoice';
 import {
   FeeChargeValueObject,
@@ -28,11 +35,13 @@ export class UpdateFeeChargeUserCase<
   constructor(
     private readonly feeService: IFeeDomainService,
     private readonly invoiceFeeChargeUpdatedEventPublisherBase: InvoiceFeeChargeUpdatedEventPublisherBase,
+    private readonly invoiceFeeGettedEventPublisherBase: InvoiceFeeGettedEventPublisherBase,
   ) {
     super();
     this.invoiceAggregateRoot = new InvoiceAggregate({
       feeService,
       invoiceFeeChargeUpdatedEventPublisherBase,
+      invoiceFeeGettedEventPublisherBase
     });
   }
 
@@ -47,7 +56,7 @@ export class UpdateFeeChargeUserCase<
   ): Promise<FeeDomainEntityBase | null> {
     const fee = await this.invoiceAggregateRoot.getFee(command.feeId.valueOf());
     this.validateEntity(fee);
-    fee.charge = new FeeChargeValueObject(command.charge.valueOf());
+    fee.charge = command.charge.valueOf();
     return await this.executeInvoiceAggregateRoot(fee.feeId.valueOf(), fee);
   }
 

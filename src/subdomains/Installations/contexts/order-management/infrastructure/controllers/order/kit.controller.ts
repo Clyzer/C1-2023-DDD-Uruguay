@@ -1,4 +1,8 @@
-import { Body, Controller, Post } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Post,
+} from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 
 import {
@@ -64,6 +68,7 @@ export class KitController {
     const useCase = new UpdateKitModelUserCase(
       this.kitService,
       this.modelUpdatedKitPublisher,
+      this.gettedKitPublisher
     );
     return await useCase.execute(command);
   }

@@ -1,19 +1,26 @@
-import { GetOrderUserCase } from '../';
 import {
-  AggregateUpdateException,
   IUseCase,
   ValueObjectErrorHandler,
   ValueObjectException,
 } from '../../../../../../../libs/sofka';
 import { OrderAggregate } from '../../../domain/aggregates';
-import { FeeDomainEntityBase } from '../../../domain/entities';
+import { IEmployedDomainEntity } from '../../../domain/entities/interfaces/';
+import { EmployedDomainEntityBase } from '../../../domain/entities/order';
 import { CreatedOrderEventPublisherBase } from '../../../domain/events';
-import { IUpdateEmployedNameCommand } from '../../../domain/interfaces/commands/order';
-import { IUpdateEmployedNameResponse } from '../../../domain/interfaces/responses/order';
+import {
+  IUpdateEmployedNameCommand,
+} from '../../../domain/interfaces/commands/order';
+import {
+  IUpdateEmployedNameResponse,
+} from '../../../domain/interfaces/responses/order';
 import { IOrderDomainService } from '../../../domain/services';
-import { EmployedNameValueObject } from '../../../domain/value-objects';
+import {
+  EmployedIdValueObject,
+  EmployedNameValueObject,
+  EmployedPhoneValueObject,
+} from '../../../domain/value-objects/order';
 
-export class UpdateEmployedNameUseCase<
+export class UpdateEmployedNameUserCase<
     Command extends IUpdateEmployedNameCommand = IUpdateEmployedNameCommand,
     Response extends IUpdateEmployedNameResponse = IUpdateEmployedNameResponse,
   >
@@ -24,7 +31,6 @@ export class UpdateEmployedNameUseCase<
 
   constructor(
     private readonly orderService: IOrderDomainService,
-    private readonly orderGet: GetOrderUserCase,
     private readonly createdOrderEventPublisherBase: CreatedOrderEventPublisherBase,
   ) {
     super();
@@ -42,36 +48,39 @@ export class UpdateEmployedNameUseCase<
 
   private async executeCommand(
     command: Command,
-  ): Promise<FeeDomainEntityBase | null> {
-    let name: EmployedNameValueObject;
-    if (typeof command.name != 'string') {
-      name = this.validateObjectValue(command.name);
-    } else name = new EmployedNameValueObject(command.name.toString());
-    const order = await this.orderAggregateRoot.getEmployed(command.employedId);
-    if (order) {
-      order.name = name;
-      return order;
-    } else
-      throw new AggregateUpdateException(
-        'Hay algunos errores en el comando ejecutado por UpdateEmployedNameUserCase',
-      );
+  ): Promise<EmployedDomainEntityBase | null> {
+    const employed = await this.orderAggregateRoot.getEmployed(command.employedId.valueOf());
+    this.validateEntity(employed);
+    employed.name = new EmployedNameValueObject(command.name.valueOf());
+    return await this.executeOrderAggregateRoot(
+      employed.employedId.valueOf(),
+      employed
+    );
   }
 
-  private validateObjectValue(
-    valueObject: EmployedNameValueObject,
-  ): EmployedNameValueObject {
-    if (
-      valueObject instanceof EmployedNameValueObject &&
-      valueObject.hasErrors()
-    )
-      this.setErrors(valueObject.getErrors());
+  private validateEntity(employed: IEmployedDomainEntity): void {
+    const { employedId, name, phone } = employed;
+
+    if (employedId instanceof EmployedIdValueObject && employedId.hasErrors())
+      this.setErrors(employedId.getErrors());
+
+    if (name instanceof EmployedNameValueObject && name.hasErrors())
+      this.setErrors(name.getErrors());
+
+    if (phone instanceof EmployedPhoneValueObject && phone.hasErrors())
+      this.setErrors(phone.getErrors());
 
     if (this.hasErrors() === true)
       throw new ValueObjectException(
-        'Hay algunos errores en el comando ejecutado por UpdateEmployedNameUserCase',
+        'Hay algunos errores en el comando ejecutado por UpdateEmployedName',
         this.getErrors(),
       );
+  }
 
-    return valueObject;
+  private async executeOrderAggregateRoot(
+    employedId: string,
+    newEmployed: EmployedDomainEntityBase
+  ): Promise<EmployedDomainEntityBase | null> {
+    return this.orderAggregateRoot.updateEmployedName(employedId, newEmployed);
   }
 }

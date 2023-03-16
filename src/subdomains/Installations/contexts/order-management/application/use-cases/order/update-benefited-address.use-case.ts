@@ -1,19 +1,28 @@
-import { GetOrderUserCase } from '../';
 import {
-  AggregateUpdateException,
   IUseCase,
   ValueObjectErrorHandler,
   ValueObjectException,
 } from '../../../../../../../libs/sofka';
 import { OrderAggregate } from '../../../domain/aggregates';
-import { FeeDomainEntityBase } from '../../../domain/entities';
+import { IBenefitedDomainEntity } from '../../../domain/entities/interfaces/';
+import { BenefitedDomainEntityBase } from '../../../domain/entities/order';
 import { CreatedOrderEventPublisherBase } from '../../../domain/events';
-import { IUpdateBenefitedAddressCommand } from '../../../domain/interfaces/commands/order';
-import { IUpdateBenefitedAddressResponse } from '../../../domain/interfaces/responses/order';
+import {
+  IUpdateBenefitedAddressCommand,
+} from '../../../domain/interfaces/commands/order';
+import {
+  IUpdateBenefitedAddressResponse,
+} from '../../../domain/interfaces/responses/order';
 import { IOrderDomainService } from '../../../domain/services';
-import { BenefitedAddressValueObject } from '../../../domain/value-objects';
+import {
+  BenefitedAddressValueObject,
+  BenefitedCompanyIdValueObject,
+  BenefitedIdValueObject,
+  BenefitedNameValueObject,
+  BenefitedPhoneValueObject,
+} from '../../../domain/value-objects/order';
 
-export class UpdateBenefitedAddressUseCase<
+export class UpdateBenefitedAddressUserCase<
     Command extends IUpdateBenefitedAddressCommand = IUpdateBenefitedAddressCommand,
     Response extends IUpdateBenefitedAddressResponse = IUpdateBenefitedAddressResponse,
   >
@@ -24,7 +33,6 @@ export class UpdateBenefitedAddressUseCase<
 
   constructor(
     private readonly orderService: IOrderDomainService,
-    private readonly orderGet: GetOrderUserCase,
     private readonly createdOrderEventPublisherBase: CreatedOrderEventPublisherBase,
   ) {
     super();
@@ -42,39 +50,51 @@ export class UpdateBenefitedAddressUseCase<
 
   private async executeCommand(
     command: Command,
-  ): Promise<FeeDomainEntityBase | null> {
-    let address: BenefitedAddressValueObject;
-    if (typeof command.address != 'string') {
-      address = this.validateObjectValue(command.address);
-    } else
-      address = new BenefitedAddressValueObject(command.address.toString());
-    const order = await this.orderAggregateRoot.getBenefited(
-      command.benefitedId,
+  ): Promise<BenefitedDomainEntityBase | null> {
+    const benefited = await this.orderAggregateRoot.getBenefited(command.benefitedId.valueOf());
+    this.validateEntity(benefited);
+    benefited.address = new BenefitedAddressValueObject(command.address.valueOf());
+    return await this.executeOrderAggregateRoot(
+      benefited.benefitedId.valueOf(),
+      benefited
     );
-    if (order) {
-      order.address = address;
-      return order;
-    } else
-      throw new AggregateUpdateException(
-        'Hay algunos errores en el comando ejecutado por UpdateBenefitedAddressUserCase',
-      );
   }
 
-  private validateObjectValue(
-    valueObject: BenefitedAddressValueObject,
-  ): BenefitedAddressValueObject {
+  private validateEntity(benefited: IBenefitedDomainEntity): void {
+    const { benefitedId, name, phone, address, companyId } = benefited;
+
     if (
-      valueObject instanceof BenefitedAddressValueObject &&
-      valueObject.hasErrors()
+      benefitedId instanceof BenefitedIdValueObject &&
+      benefitedId.hasErrors()
     )
-      this.setErrors(valueObject.getErrors());
+      this.setErrors(benefitedId.getErrors());
+
+    if (name instanceof BenefitedNameValueObject && name.hasErrors())
+      this.setErrors(name.getErrors());
+
+    if (phone instanceof BenefitedPhoneValueObject && phone.hasErrors())
+      this.setErrors(phone.getErrors());
+
+    if (address instanceof BenefitedAddressValueObject && address.hasErrors())
+      this.setErrors(address.getErrors());
+
+    if (
+      companyId instanceof BenefitedCompanyIdValueObject &&
+      companyId.hasErrors()
+    )
+      this.setErrors(companyId.getErrors());
 
     if (this.hasErrors() === true)
       throw new ValueObjectException(
-        'Hay algunos errores en el comando ejecutado por UpdateBenefitedAddressUserCase',
+        'Hay algunos errores en el comando ejecutado por UpdateBenefitedAddress',
         this.getErrors(),
       );
+  }
 
-    return valueObject;
+  private async executeOrderAggregateRoot(
+    benefitedId: string,
+    newBenefited: BenefitedDomainEntityBase
+  ): Promise<BenefitedDomainEntityBase | null> {
+    return this.orderAggregateRoot.updateBenefitedAddress(benefitedId, newBenefited);
   }
 }

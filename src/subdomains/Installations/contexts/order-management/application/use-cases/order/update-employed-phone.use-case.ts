@@ -1,19 +1,26 @@
-import { GetOrderUserCase } from '../';
 import {
-  AggregateUpdateException,
   IUseCase,
   ValueObjectErrorHandler,
   ValueObjectException,
 } from '../../../../../../../libs/sofka';
 import { OrderAggregate } from '../../../domain/aggregates';
-import { FeeDomainEntityBase } from '../../../domain/entities';
+import { IEmployedDomainEntity } from '../../../domain/entities/interfaces/';
+import { EmployedDomainEntityBase } from '../../../domain/entities/order';
 import { CreatedOrderEventPublisherBase } from '../../../domain/events';
-import { IUpdateEmployedPhoneCommand } from '../../../domain/interfaces/commands/order';
-import { IUpdateEmployedPhoneResponse } from '../../../domain/interfaces/responses/order';
+import {
+  IUpdateEmployedPhoneCommand,
+} from '../../../domain/interfaces/commands/order';
+import {
+  IUpdateEmployedPhoneResponse,
+} from '../../../domain/interfaces/responses/order';
 import { IOrderDomainService } from '../../../domain/services';
-import { EmployedPhoneValueObject } from '../../../domain/value-objects';
+import {
+  EmployedIdValueObject,
+  EmployedNameValueObject,
+  EmployedPhoneValueObject,
+} from '../../../domain/value-objects/order';
 
-export class UpdateEmployedPhoneUseCase<
+export class UpdateEmployedPhoneUserCase<
     Command extends IUpdateEmployedPhoneCommand = IUpdateEmployedPhoneCommand,
     Response extends IUpdateEmployedPhoneResponse = IUpdateEmployedPhoneResponse,
   >
@@ -24,7 +31,6 @@ export class UpdateEmployedPhoneUseCase<
 
   constructor(
     private readonly orderService: IOrderDomainService,
-    private readonly orderGet: GetOrderUserCase,
     private readonly createdOrderEventPublisherBase: CreatedOrderEventPublisherBase,
   ) {
     super();
@@ -42,36 +48,39 @@ export class UpdateEmployedPhoneUseCase<
 
   private async executeCommand(
     command: Command,
-  ): Promise<FeeDomainEntityBase | null> {
-    let phone: EmployedPhoneValueObject;
-    if (typeof command.phone != 'string') {
-      phone = this.validateObjectValue(command.phone);
-    } else phone = new EmployedPhoneValueObject(command.phone.toString());
-    const order = await this.orderAggregateRoot.getEmployed(command.employedId);
-    if (order) {
-      order.phone = phone;
-      return order;
-    } else
-      throw new AggregateUpdateException(
-        'Hay algunos errores en el comando ejecutado por UpdateEmployedPhoneUserCase',
-      );
+  ): Promise<EmployedDomainEntityBase | null> {
+    const employed = await this.orderAggregateRoot.getEmployed(command.employedId.valueOf());
+    this.validateEntity(employed);
+    employed.phone = new EmployedPhoneValueObject(command.phone.valueOf());
+    return await this.executeOrderAggregateRoot(
+      employed.employedId.valueOf(),
+      employed
+    );
   }
 
-  private validateObjectValue(
-    valueObject: EmployedPhoneValueObject,
-  ): EmployedPhoneValueObject {
-    if (
-      valueObject instanceof EmployedPhoneValueObject &&
-      valueObject.hasErrors()
-    )
-      this.setErrors(valueObject.getErrors());
+  private validateEntity(employed: IEmployedDomainEntity): void {
+    const { employedId, name, phone } = employed;
+
+    if (employedId instanceof EmployedIdValueObject && employedId.hasErrors())
+      this.setErrors(employedId.getErrors());
+
+    if (name instanceof EmployedNameValueObject && name.hasErrors())
+      this.setErrors(name.getErrors());
+
+    if (phone instanceof EmployedPhoneValueObject && phone.hasErrors())
+      this.setErrors(phone.getErrors());
 
     if (this.hasErrors() === true)
       throw new ValueObjectException(
-        'Hay algunos errores en el comando ejecutado por UpdateEmployedPhoneUserCase',
+        'Hay algunos errores en el comando ejecutado por UpdateEmployedPhone',
         this.getErrors(),
       );
+  }
 
-    return valueObject;
+  private async executeOrderAggregateRoot(
+    employedId: string,
+    newEmployed: EmployedDomainEntityBase
+  ): Promise<EmployedDomainEntityBase | null> {
+    return this.orderAggregateRoot.updateEmployedPhone(employedId, newEmployed);
   }
 }

@@ -1,19 +1,25 @@
-import { GetOrderUserCase } from '../';
 import {
-  AggregateUpdateException,
   IUseCase,
   ValueObjectErrorHandler,
   ValueObjectException,
 } from '../../../../../../../libs/sofka';
 import { OrderAggregate } from '../../../domain/aggregates';
-import { FeeDomainEntityBase } from '../../../domain/entities';
+import { IKitDomainEntity } from '../../../domain/entities/interfaces/';
+import { KitDomainEntityBase } from '../../../domain/entities/order';
 import { CreatedOrderEventPublisherBase } from '../../../domain/events';
-import { IUpdateKitModelCommand } from '../../../domain/interfaces/commands/order';
-import { IUpdateKitModelResponse } from '../../../domain/interfaces/responses/order';
+import {
+  IUpdateKitModelCommand,
+} from '../../../domain/interfaces/commands/order';
+import {
+  IUpdateKitModelResponse,
+} from '../../../domain/interfaces/responses/order';
 import { IOrderDomainService } from '../../../domain/services';
-import { KitModelValueObject } from '../../../domain/value-objects';
+import {
+  KitIdValueObject,
+  KitModelValueObject,
+} from '../../../domain/value-objects/order';
 
-export class UpdateKitModelUseCase<
+export class UpdateKitModelUserCase<
     Command extends IUpdateKitModelCommand = IUpdateKitModelCommand,
     Response extends IUpdateKitModelResponse = IUpdateKitModelResponse,
   >
@@ -24,7 +30,6 @@ export class UpdateKitModelUseCase<
 
   constructor(
     private readonly orderService: IOrderDomainService,
-    private readonly orderGet: GetOrderUserCase,
     private readonly createdOrderEventPublisherBase: CreatedOrderEventPublisherBase,
   ) {
     super();
@@ -42,33 +47,35 @@ export class UpdateKitModelUseCase<
 
   private async executeCommand(
     command: Command,
-  ): Promise<FeeDomainEntityBase | null> {
-    let model: KitModelValueObject;
-    if (typeof command.model != 'string') {
-      model = this.validateObjectValue(command.model);
-    } else model = new KitModelValueObject(command.model.toString());
-    const order = await this.orderAggregateRoot.getKit(command.kitId);
-    if (order) {
-      order.model = model;
-      return order;
-    } else
-      throw new AggregateUpdateException(
-        'Hay algunos errores en el comando ejecutado por UpdateKitModelUserCase',
-      );
+  ): Promise<KitDomainEntityBase | null> {
+    const kit = await this.orderAggregateRoot.getKit(command.kitId.valueOf());
+    this.validateEntity(kit);
+    kit.model = new KitModelValueObject(command.model.valueOf());
+    return await this.executeOrderAggregateRoot(
+      kit.kitId.valueOf(),
+      kit
+    );
   }
 
-  private validateObjectValue(
-    valueObject: KitModelValueObject,
-  ): KitModelValueObject {
-    if (valueObject instanceof KitModelValueObject && valueObject.hasErrors())
-      this.setErrors(valueObject.getErrors());
+  private validateEntity(kit: IKitDomainEntity): void {
+    const { kitId, model } = kit;
+    if (kitId instanceof KitIdValueObject && kitId.hasErrors())
+      this.setErrors(kitId.getErrors());
+
+    if (model instanceof KitModelValueObject && model.hasErrors())
+      this.setErrors(model.getErrors());
 
     if (this.hasErrors() === true)
       throw new ValueObjectException(
-        'Hay algunos errores en el comando ejecutado por UpdateKitModelUserCase',
+        'Hay algunos errores en el comando ejecutado por UpdateKitModel',
         this.getErrors(),
       );
+  }
 
-    return valueObject;
+  private async executeOrderAggregateRoot(
+    kitId: string,
+    newKit: KitDomainEntityBase
+  ): Promise<KitDomainEntityBase | null> {
+    return this.orderAggregateRoot.updateKitModel(kitId, newKit);
   }
 }

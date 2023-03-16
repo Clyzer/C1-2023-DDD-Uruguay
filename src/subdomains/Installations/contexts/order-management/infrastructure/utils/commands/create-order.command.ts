@@ -1,9 +1,4 @@
-import {
-  IsBoolean,
-  IsNumber,
-  IsObject,
-  IsString,
-} from 'class-validator';
+import { IsBoolean, IsNumber, IsObject, IsString } from 'class-validator';
 
 import { ApiProperty } from '@nestjs/swagger';
 
@@ -15,35 +10,35 @@ import {
 } from '../../../domain/interfaces/commands';
 
 export class CreateOrderCommand implements ICreateOrderCommand {
-    @ApiProperty()
-    @IsString()
-    orderId?: string;
+  @ApiProperty()
+  @IsString()
+  orderId?: string;
 
-    @ApiProperty()
-    @IsBoolean()
-    status?: boolean;
+  @ApiProperty()
+  @IsBoolean()
+  status?: boolean;
 
-    @ApiProperty()
-    @IsString()
-    kit?: ICreateKitCommand;
+  @ApiProperty()
+  @IsString()
+  kit?: ICreateKitCommand;
 
-    @ApiProperty()
-    @IsObject()
-    employed?: ICreateBenefitedCommand;
+  @ApiProperty()
+  @IsObject()
+  employed?: ICreateBenefitedCommand;
 
-    @ApiProperty()
-    @IsObject()
-    benefited?: ICreateEmployedCommand;
+  @ApiProperty()
+  @IsObject()
+  benefited?: ICreateEmployedCommand;
 
-    @ApiProperty()
-    @IsNumber()
-    createdAt?: number;
+  @ApiProperty()
+  @IsNumber()
+  createdAt?: number;
 
-    @ApiProperty()
-    @IsNumber()
-    updatedAt?: number;
+  @ApiProperty()
+  @IsNumber()
+  updatedAt?: number;
 
-    @ApiProperty()
-    @IsNumber()
-    deletedAt?: number;
+  @ApiProperty()
+  @IsNumber()
+  deletedAt?: number;
 }

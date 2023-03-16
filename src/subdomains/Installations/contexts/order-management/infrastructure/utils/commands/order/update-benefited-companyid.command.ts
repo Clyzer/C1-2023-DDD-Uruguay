@@ -2,11 +2,11 @@ import { IsString } from 'class-validator';
 
 import { ApiProperty } from '@nestjs/swagger';
 
-import {
-  IUpdateBenefitedCompanyIdCommand,
-} from '../../../../domain/interfaces/commands/order';
+import { IUpdateBenefitedCompanyIdCommand } from '../../../../domain/interfaces/commands/order';
 
-export class UpdateBenefitedCompanyIdCommand implements IUpdateBenefitedCompanyIdCommand {
+export class UpdateBenefitedCompanyIdCommand
+  implements IUpdateBenefitedCompanyIdCommand
+{
   @ApiProperty()
   @IsString()
   benefitedId: string;

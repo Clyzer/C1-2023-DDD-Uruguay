@@ -6,9 +6,7 @@ import {
 import { OrderAggregate } from '../../../domain/aggregates';
 import { KitDomainEntityBase } from '../../../domain/entities';
 import { IKitDomainEntity } from '../../../domain/entities/interfaces';
-import {
-  OrderKitCreatedEventPublisherBase,
-} from '../../../domain/events/publishers/order';
+import { OrderKitCreatedEventPublisherBase } from '../../../domain/events/publishers/order';
 import { ICreateKitCommand } from '../../../domain/interfaces/commands/order';
 import { ICreateKitResponse } from '../../../domain/interfaces/responses/order';
 import { IKitDomainService } from '../../../domain/services/order';
@@ -16,7 +14,7 @@ import { KitModelValueObject } from '../../../domain/value-objects';
 
 export class CreateKitUseCase<
     Command extends ICreateKitCommand = ICreateKitCommand,
-    Response extends ICreateKitResponse = ICreateKitResponse
+    Response extends ICreateKitResponse = ICreateKitResponse,
   >
   extends ValueObjectErrorHandler
   implements IUseCase<Command, Response>
@@ -25,7 +23,7 @@ export class CreateKitUseCase<
 
   constructor(
     private readonly kitService: IKitDomainService,
-    private readonly orderKitCreatedEventPublisherBase: OrderKitCreatedEventPublisherBase
+    private readonly orderKitCreatedEventPublisherBase: OrderKitCreatedEventPublisherBase,
   ) {
     super();
     this.orderAggregateRoot = new OrderAggregate({
@@ -41,7 +39,7 @@ export class CreateKitUseCase<
   }
 
   private async executeCommand(
-    command: Command
+    command: Command,
   ): Promise<KitDomainEntityBase | null> {
     const ValueObject = this.createValueObject(command);
     this.validateValueObject(ValueObject);
@@ -50,7 +48,7 @@ export class CreateKitUseCase<
   }
 
   private createValueObject(command: Command): IKitDomainEntity {
-    const model = new KitModelValueObject(command.model);
+    const model = new KitModelValueObject(command.model.valueOf());
 
     return {
       model,
@@ -65,13 +63,13 @@ export class CreateKitUseCase<
 
     if (this.hasErrors() === true)
       throw new ValueObjectException(
-        "Hay algunos errores en el comando ejecutado por createKitUserCase",
-        this.getErrors()
+        'Hay algunos errores en el comando ejecutado por createKitUserCase',
+        this.getErrors(),
       );
   }
 
   private createEntityKitDomain(
-    valueObject: IKitDomainEntity
+    valueObject: IKitDomainEntity,
   ): KitDomainEntityBase {
     const { model } = valueObject;
 
@@ -80,8 +78,8 @@ export class CreateKitUseCase<
     });
   }
 
-  private executeOrderAggregateRoot(
-    entity: KitDomainEntityBase
+  private async executeOrderAggregateRoot(
+    entity: KitDomainEntityBase,
   ): Promise<KitDomainEntityBase | null> {
     return this.orderAggregateRoot.createKit(entity);
   }

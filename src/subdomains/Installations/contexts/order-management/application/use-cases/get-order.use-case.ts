@@ -11,7 +11,7 @@ import {
   OrderDomainEntityBase,
 } from '../../domain/entities';
 import { IOrderDomainEntity } from '../../domain/entities/interfaces';
-import { CreatedOrderEventPublisherBase } from '../../domain/events';
+import { CreatedOrderEventPublisherBase } from '../../domain/events/publishers';
 import { IGetOrderCommand } from '../../domain/interfaces/commands';
 import { IGetOrderResponse } from '../../domain/interfaces/responses';
 import { IOrderDomainService } from '../../domain/services';
@@ -34,7 +34,7 @@ import {
 
 export class GetOrderUserCase<
     Command extends IGetOrderCommand = IGetOrderCommand,
-    Response extends IGetOrderResponse = IGetOrderResponse
+    Response extends IGetOrderResponse = IGetOrderResponse,
   >
   extends ValueObjectErrorHandler
   implements IUseCase<Command, Response>
@@ -43,7 +43,7 @@ export class GetOrderUserCase<
 
   constructor(
     private readonly orderService: IOrderDomainService,
-    private readonly createdOrderEventPublisherBase: CreatedOrderEventPublisherBase
+    private readonly createdOrderEventPublisherBase: CreatedOrderEventPublisherBase,
   ) {
     super();
     this.orderAggregateRoot = new OrderAggregate({
@@ -59,7 +59,7 @@ export class GetOrderUserCase<
   }
 
   private async executeCommand(
-    command: Command
+    command: Command,
   ): Promise<OrderDomainEntityBase | null> {
     const order = await this.orderAggregateRoot.getOrder(command.orderId);
     this.validateAggregate(order);
@@ -81,8 +81,8 @@ export class GetOrderUserCase<
 
     if (this.hasErrors() === true)
       throw new ValueObjectException(
-        "Hay algunos errores en el comando ejecutado por GetOrder",
-        this.getErrors()
+        'Hay algunos errores en el comando ejecutado por GetOrder',
+        this.getErrors(),
       );
   }
 

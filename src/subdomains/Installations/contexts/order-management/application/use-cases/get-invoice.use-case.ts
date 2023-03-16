@@ -9,8 +9,10 @@ import {
   FeeDomainEntityBase,
   InvoiceDomainEntityBase,
 } from '../../domain/entities/';
-import { IInvoiceDomainEntity } from '../../domain/entities/interfaces/';
-import { CreatedInvoiceEventPublisherBase } from '../../domain/events';
+import { IInvoiceDomainEntity } from '../../domain/entities/interfaces';
+import {
+  CreatedInvoiceEventPublisherBase,
+} from '../../domain/events/publishers';
 import { IGetInvoiceCommand } from '../../domain/interfaces/commands';
 import { IGetInvoiceResponse } from '../../domain/interfaces/responses';
 import { IInvoiceDomainService } from '../../domain/services';
@@ -29,7 +31,7 @@ import {
 
 export class GetInvoiceUserCase<
     Command extends IGetInvoiceCommand = IGetInvoiceCommand,
-    Response extends IGetInvoiceResponse = IGetInvoiceResponse
+    Response extends IGetInvoiceResponse = IGetInvoiceResponse,
   >
   extends ValueObjectErrorHandler
   implements IUseCase<Command, Response>
@@ -38,7 +40,7 @@ export class GetInvoiceUserCase<
 
   constructor(
     private readonly invoiceService: IInvoiceDomainService,
-    private readonly createdInvoiceEventPublisherBase: CreatedInvoiceEventPublisherBase
+    private readonly createdInvoiceEventPublisherBase: CreatedInvoiceEventPublisherBase,
   ) {
     super();
     this.invoiceAggregateRoot = new InvoiceAggregate({
@@ -54,10 +56,10 @@ export class GetInvoiceUserCase<
   }
 
   private async executeCommand(
-    command: Command
+    command: Command,
   ): Promise<InvoiceDomainEntityBase | null> {
     const invoice = await this.invoiceAggregateRoot.getInvoice(
-      command.invoiceId
+      command.invoiceId,
     );
     this.validateAggregate(invoice);
     return invoice;
@@ -77,8 +79,8 @@ export class GetInvoiceUserCase<
 
     if (this.hasErrors() === true)
       throw new ValueObjectException(
-        "Hay algunos errores en el comando ejecutado por GetInvoice",
-        this.getErrors()
+        'Hay algunos errores en el comando ejecutado por GetInvoice',
+        this.getErrors(),
       );
   }
 

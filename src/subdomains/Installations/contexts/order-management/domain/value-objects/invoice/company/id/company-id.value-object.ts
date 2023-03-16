@@ -1,6 +1,6 @@
-import { ValueObjectBase } from "src/libs/";
-import { IsUUID } from "src/libs/validations";
-import { v4 as uuid } from "uuid";
+import { ValueObjectBase } from 'src/libs/';
+import { IsUUID } from 'src/libs/validations';
+import { v4 as uuid } from 'uuid';
 
 export class CompanyIdValueObject extends ValueObjectBase<string> {
   constructor(value?: string) {
@@ -14,8 +14,8 @@ export class CompanyIdValueObject extends ValueObjectBase<string> {
   private validateStructure(): void {
     if (this.value && IsUUID(this.value) === false) {
       const error = {
-        field: "CompanyID",
-        message: "The id does not contain a valid UUIDV4 structure",
+        field: 'CompanyID',
+        message: 'The id does not contain a valid UUIDV4 structure',
       };
       this.setError(error);
     }

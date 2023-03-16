@@ -1,4 +1,4 @@
 export interface IDeleteFeeResponse {
-    success: boolean;
-    data: boolean;
+  success: boolean;
+  data: boolean;
 }

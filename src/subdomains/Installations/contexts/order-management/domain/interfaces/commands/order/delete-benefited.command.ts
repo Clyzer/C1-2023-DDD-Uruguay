@@ -1,3 +1,3 @@
 export interface IDeleteBenefitedCommand {
-    benefitedId: string;
+  benefitedId: string;
 }

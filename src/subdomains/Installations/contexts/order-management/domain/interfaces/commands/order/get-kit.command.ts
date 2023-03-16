@@ -1,4 +1,3 @@
 export interface IGetKitCommand {
-    kitId: string;
+  kitId: string;
 }
-  

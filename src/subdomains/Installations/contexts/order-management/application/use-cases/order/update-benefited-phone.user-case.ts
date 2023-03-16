@@ -8,18 +8,14 @@ import {
 import { OrderAggregate } from '../../../domain/aggregates';
 import { FeeDomainEntityBase } from '../../../domain/entities';
 import { CreatedOrderEventPublisherBase } from '../../../domain/events';
-import {
-  IUpdateBenefitedPhoneCommand,
-} from '../../../domain/interfaces/commands/order';
-import {
-  IUpdateBenefitedPhoneResponse,
-} from '../../../domain/interfaces/responses/order';
+import { IUpdateBenefitedPhoneCommand } from '../../../domain/interfaces/commands/order';
+import { IUpdateBenefitedPhoneResponse } from '../../../domain/interfaces/responses/order';
 import { IOrderDomainService } from '../../../domain/services';
 import { BenefitedPhoneValueObject } from '../../../domain/value-objects';
 
 export class UpdateBenefitedPhoneUseCase<
     Command extends IUpdateBenefitedPhoneCommand = IUpdateBenefitedPhoneCommand,
-    Response extends IUpdateBenefitedPhoneResponse = IUpdateBenefitedPhoneResponse
+    Response extends IUpdateBenefitedPhoneResponse = IUpdateBenefitedPhoneResponse,
   >
   extends ValueObjectErrorHandler
   implements IUseCase<Command, Response>
@@ -29,7 +25,7 @@ export class UpdateBenefitedPhoneUseCase<
   constructor(
     private readonly orderService: IOrderDomainService,
     private readonly orderGet: GetOrderUserCase,
-    private readonly createdOrderEventPublisherBase: CreatedOrderEventPublisherBase
+    private readonly createdOrderEventPublisherBase: CreatedOrderEventPublisherBase,
   ) {
     super();
     this.orderAggregateRoot = new OrderAggregate({
@@ -45,23 +41,27 @@ export class UpdateBenefitedPhoneUseCase<
   }
 
   private async executeCommand(
-    command: Command
+    command: Command,
   ): Promise<FeeDomainEntityBase | null> {
     let phone: BenefitedPhoneValueObject;
-    if (typeof command.phone != "string"){
+    if (typeof command.phone != 'string') {
       phone = this.validateObjectValue(command.phone);
     } else phone = new BenefitedPhoneValueObject(command.phone.toString());
-    const order = await this.orderAggregateRoot.getBenefited(command.benefitedId);
+    const order = await this.orderAggregateRoot.getBenefited(
+      command.benefitedId,
+    );
     if (order) {
       order.phone = phone;
       return order;
     } else
       throw new AggregateUpdateException(
-        "Hay algunos errores en el comando ejecutado por UpdateBenefitedPhoneUserCase"
+        'Hay algunos errores en el comando ejecutado por UpdateBenefitedPhoneUserCase',
       );
   }
 
-  private validateObjectValue(valueObject: BenefitedPhoneValueObject): BenefitedPhoneValueObject {
+  private validateObjectValue(
+    valueObject: BenefitedPhoneValueObject,
+  ): BenefitedPhoneValueObject {
     if (
       valueObject instanceof BenefitedPhoneValueObject &&
       valueObject.hasErrors()
@@ -70,10 +70,10 @@ export class UpdateBenefitedPhoneUseCase<
 
     if (this.hasErrors() === true)
       throw new ValueObjectException(
-        "Hay algunos errores en el comando ejecutado por UpdateBenefitedPhoneUserCase",
-        this.getErrors()
+        'Hay algunos errores en el comando ejecutado por UpdateBenefitedPhoneUserCase',
+        this.getErrors(),
       );
-    
+
     return valueObject;
   }
 }

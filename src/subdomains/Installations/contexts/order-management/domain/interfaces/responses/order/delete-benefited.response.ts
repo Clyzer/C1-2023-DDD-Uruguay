@@ -1,4 +1,4 @@
 export interface IDeleteBenefitedResponse {
-    success: boolean;
-    data: boolean;
+  success: boolean;
+  data: boolean;
 }

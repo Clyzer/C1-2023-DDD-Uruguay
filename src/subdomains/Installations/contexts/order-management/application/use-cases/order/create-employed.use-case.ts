@@ -7,12 +7,8 @@ import { OrderAggregate } from '../../../domain/aggregates';
 import { EmployedDomainEntityBase } from '../../../domain/entities';
 import { IEmployedDomainEntity } from '../../../domain/entities/interfaces';
 import { CreatedOrderEventPublisherBase } from '../../../domain/events';
-import {
-  ICreateEmployedCommand,
-} from '../../../domain/interfaces/commands/order';
-import {
-  ICreateEmployedResponse,
-} from '../../../domain/interfaces/responses/order';
+import { ICreateEmployedCommand } from '../../../domain/interfaces/commands/order';
+import { ICreateEmployedResponse } from '../../../domain/interfaces/responses/order';
 import { IOrderDomainService } from '../../../domain/services';
 import {
   EmployedNameValueObject,
@@ -21,7 +17,7 @@ import {
 
 export class CreateEmployedUseCase<
     Command extends ICreateEmployedCommand = ICreateEmployedCommand,
-    Response extends ICreateEmployedResponse = ICreateEmployedResponse
+    Response extends ICreateEmployedResponse = ICreateEmployedResponse,
   >
   extends ValueObjectErrorHandler
   implements IUseCase<Command, Response>
@@ -30,7 +26,7 @@ export class CreateEmployedUseCase<
 
   constructor(
     private readonly orderService: IOrderDomainService,
-    private readonly createdOrderEventPublisherBase: CreatedOrderEventPublisherBase
+    private readonly createdOrderEventPublisherBase: CreatedOrderEventPublisherBase,
   ) {
     super();
     this.orderAggregateRoot = new OrderAggregate({
@@ -46,7 +42,7 @@ export class CreateEmployedUseCase<
   }
 
   private async executeCommand(
-    command: Command
+    command: Command,
   ): Promise<EmployedDomainEntityBase | null> {
     const ValueObject = this.createValueObject(command);
     this.validateValueObject(ValueObject);
@@ -55,8 +51,8 @@ export class CreateEmployedUseCase<
   }
 
   private createValueObject(command: Command): IEmployedDomainEntity {
-    const name = new EmployedNameValueObject(command.name);
-    const phone = new EmployedPhoneValueObject(command.phone);
+    const name = new EmployedNameValueObject(command.name.valueOf());
+    const phone = new EmployedPhoneValueObject(command.phone.valueOf());
 
     return {
       name,
@@ -75,13 +71,13 @@ export class CreateEmployedUseCase<
 
     if (this.hasErrors() === true)
       throw new ValueObjectException(
-        "Hay algunos errores en el comando ejecutado por createEmployedUserCase",
-        this.getErrors()
+        'Hay algunos errores en el comando ejecutado por createEmployedUserCase',
+        this.getErrors(),
       );
   }
 
   private createEntityEmployedDomain(
-    valueObject: IEmployedDomainEntity
+    valueObject: IEmployedDomainEntity,
   ): EmployedDomainEntityBase {
     const { name, phone } = valueObject;
 
@@ -91,8 +87,8 @@ export class CreateEmployedUseCase<
     });
   }
 
-  private executeOrderAggregateRoot(
-    entity: EmployedDomainEntityBase
+  private async executeOrderAggregateRoot(
+    entity: EmployedDomainEntityBase,
   ): Promise<EmployedDomainEntityBase | null> {
     return this.orderAggregateRoot.createEmployed(entity);
   }

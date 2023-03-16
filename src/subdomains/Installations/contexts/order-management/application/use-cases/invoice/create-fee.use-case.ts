@@ -6,12 +6,10 @@ import {
 import { InvoiceAggregate } from '../../../domain/aggregates';
 import { FeeDomainEntityBase } from '../../../domain/entities';
 import { IFeeDomainEntity } from '../../../domain/entities/interfaces';
-import { CreatedInvoiceEventPublisherBase } from '../../../domain/events';
+import { InvoiceFeeCreatedEventPublisherBase } from '../../../domain/events/publishers/invoice';
 import { ICreateFeeCommand } from '../../../domain/interfaces/commands/invoice';
-import {
-  ICreateFeeResponse,
-} from '../../../domain/interfaces/responses/invoice';
-import { IInvoiceDomainService } from '../../../domain/services';
+import { ICreateFeeResponse } from '../../../domain/interfaces/responses/invoice';
+import { IFeeDomainService } from '../../../domain/services/invoice';
 import {
   FeeChargeValueObject,
   FeeTaxValueObject,
@@ -19,7 +17,7 @@ import {
 
 export class CreateFeeUseCase<
     Command extends ICreateFeeCommand = ICreateFeeCommand,
-    Response extends ICreateFeeResponse = ICreateFeeResponse
+    Response extends ICreateFeeResponse = ICreateFeeResponse,
   >
   extends ValueObjectErrorHandler
   implements IUseCase<Command, Response>
@@ -27,13 +25,13 @@ export class CreateFeeUseCase<
   private readonly invoiceAggregateRoot: InvoiceAggregate;
 
   constructor(
-    private readonly invoiceService: IInvoiceDomainService,
-    private readonly createdInvoiceEventPublisherBase: CreatedInvoiceEventPublisherBase
+    private readonly feeService: IFeeDomainService,
+    private readonly invoiceFeeCreatedEventPublisherBase: InvoiceFeeCreatedEventPublisherBase,
   ) {
     super();
     this.invoiceAggregateRoot = new InvoiceAggregate({
-      invoiceService,
-      createdInvoiceEventPublisherBase,
+      feeService,
+      invoiceFeeCreatedEventPublisherBase,
     });
   }
 
@@ -44,17 +42,17 @@ export class CreateFeeUseCase<
   }
 
   private async executeCommand(
-    command: Command
+    command: Command,
   ): Promise<FeeDomainEntityBase | null> {
-    const ValueObject = this.createValueObject(command);
-    this.validateValueObject(ValueObject);
-    const entity = this.createEntityFeeDomain(ValueObject);
+    const valueObjects = this.createValueObjects(command);
+    this.validateValueObjects(valueObjects);
+    const entity = this.createEntity(valueObjects);
     return this.executeInvoiceAggregateRoot(entity);
   }
 
-  private createValueObject(command: Command): IFeeDomainEntity {
-    const charge = new FeeChargeValueObject(command.charge);
-    const tax = new FeeTaxValueObject(command.tax);
+  private createValueObjects(command: Command): IFeeDomainEntity {
+    const charge = new FeeChargeValueObject(command.charge.valueOf());
+    const tax = new FeeTaxValueObject(command.tax.valueOf());
 
     return {
       charge,
@@ -62,8 +60,8 @@ export class CreateFeeUseCase<
     };
   }
 
-  private validateValueObject(valueObject: IFeeDomainEntity): void {
-    const { charge, tax } = valueObject;
+  private validateValueObjects(valueObjects: IFeeDomainEntity): void {
+    const { charge, tax } = valueObjects;
 
     if (charge instanceof FeeChargeValueObject && charge.hasErrors())
       this.setErrors(charge.getErrors());
@@ -73,14 +71,12 @@ export class CreateFeeUseCase<
 
     if (this.hasErrors() === true)
       throw new ValueObjectException(
-        "Hay algunos errores en el comando ejecutado por createFeeUserCase",
-        this.getErrors()
+        'Hay algunos errores en el comando ejecutado por createFeeUserCase',
+        this.getErrors(),
       );
   }
 
-  private createEntityFeeDomain(
-    valueObject: IFeeDomainEntity
-  ): FeeDomainEntityBase {
+  private createEntity(valueObject: IFeeDomainEntity): FeeDomainEntityBase {
     const { charge, tax } = valueObject;
 
     return new FeeDomainEntityBase({
@@ -89,8 +85,8 @@ export class CreateFeeUseCase<
     });
   }
 
-  private executeInvoiceAggregateRoot(
-    entity: FeeDomainEntityBase
+  private async executeInvoiceAggregateRoot(
+    entity: FeeDomainEntityBase,
   ): Promise<FeeDomainEntityBase | null> {
     return this.invoiceAggregateRoot.createFee(entity);
   }

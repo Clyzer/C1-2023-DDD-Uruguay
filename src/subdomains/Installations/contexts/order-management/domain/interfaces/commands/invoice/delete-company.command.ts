@@ -1,3 +1,3 @@
 export interface IDeleteCompanyCommand {
-    companyId: string;
+  companyId: string;
 }

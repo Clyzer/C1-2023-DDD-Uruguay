@@ -5,10 +5,7 @@ import {
   InvoiceStatusValueObject,
 } from '../value-objects/invoice';
 import { IInvoiceDomainEntity } from './interfaces';
-import {
-  CompanyDomainEntityBase,
-  FeeDomainEntityBase,
-} from './invoice';
+import { CompanyDomainEntityBase, FeeDomainEntityBase } from './invoice';
 
 export class InvoiceDomainEntityBase implements IInvoiceDomainEntity {
   invoiceId?: string | InvoiceIdValueObject;

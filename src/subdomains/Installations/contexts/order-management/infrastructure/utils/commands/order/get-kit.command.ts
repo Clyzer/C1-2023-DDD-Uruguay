@@ -5,9 +5,7 @@ import { ApiProperty } from '@nestjs/swagger';
 import { IGetKitCommand } from '../../../../domain/interfaces/commands/order';
 
 export class GetKitCommand implements IGetKitCommand {
-
-    @ApiProperty()
-    @IsString()
-    kitId: string;
+  @ApiProperty()
+  @IsString()
+  kitId: string;
 }
-  

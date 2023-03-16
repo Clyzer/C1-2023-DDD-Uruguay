@@ -8,18 +8,14 @@ import {
 import { OrderAggregate } from '../../../domain/aggregates';
 import { FeeDomainEntityBase } from '../../../domain/entities';
 import { CreatedOrderEventPublisherBase } from '../../../domain/events';
-import {
-  IUpdateEmployedNameCommand,
-} from '../../../domain/interfaces/commands/order';
-import {
-  IUpdateEmployedNameResponse,
-} from '../../../domain/interfaces/responses/order';
+import { IUpdateEmployedNameCommand } from '../../../domain/interfaces/commands/order';
+import { IUpdateEmployedNameResponse } from '../../../domain/interfaces/responses/order';
 import { IOrderDomainService } from '../../../domain/services';
 import { EmployedNameValueObject } from '../../../domain/value-objects';
 
 export class UpdateEmployedNameUseCase<
     Command extends IUpdateEmployedNameCommand = IUpdateEmployedNameCommand,
-    Response extends IUpdateEmployedNameResponse = IUpdateEmployedNameResponse
+    Response extends IUpdateEmployedNameResponse = IUpdateEmployedNameResponse,
   >
   extends ValueObjectErrorHandler
   implements IUseCase<Command, Response>
@@ -29,7 +25,7 @@ export class UpdateEmployedNameUseCase<
   constructor(
     private readonly orderService: IOrderDomainService,
     private readonly orderGet: GetOrderUserCase,
-    private readonly createdOrderEventPublisherBase: CreatedOrderEventPublisherBase
+    private readonly createdOrderEventPublisherBase: CreatedOrderEventPublisherBase,
   ) {
     super();
     this.orderAggregateRoot = new OrderAggregate({
@@ -45,10 +41,10 @@ export class UpdateEmployedNameUseCase<
   }
 
   private async executeCommand(
-    command: Command
+    command: Command,
   ): Promise<FeeDomainEntityBase | null> {
     let name: EmployedNameValueObject;
-    if (typeof command.name != "string"){
+    if (typeof command.name != 'string') {
       name = this.validateObjectValue(command.name);
     } else name = new EmployedNameValueObject(command.name.toString());
     const order = await this.orderAggregateRoot.getEmployed(command.employedId);
@@ -57,11 +53,13 @@ export class UpdateEmployedNameUseCase<
       return order;
     } else
       throw new AggregateUpdateException(
-        "Hay algunos errores en el comando ejecutado por UpdateEmployedNameUserCase"
+        'Hay algunos errores en el comando ejecutado por UpdateEmployedNameUserCase',
       );
   }
 
-  private validateObjectValue(valueObject: EmployedNameValueObject): EmployedNameValueObject {
+  private validateObjectValue(
+    valueObject: EmployedNameValueObject,
+  ): EmployedNameValueObject {
     if (
       valueObject instanceof EmployedNameValueObject &&
       valueObject.hasErrors()
@@ -70,8 +68,8 @@ export class UpdateEmployedNameUseCase<
 
     if (this.hasErrors() === true)
       throw new ValueObjectException(
-        "Hay algunos errores en el comando ejecutado por UpdateEmployedNameUserCase",
-        this.getErrors()
+        'Hay algunos errores en el comando ejecutado por UpdateEmployedNameUserCase',
+        this.getErrors(),
       );
 
     return valueObject;

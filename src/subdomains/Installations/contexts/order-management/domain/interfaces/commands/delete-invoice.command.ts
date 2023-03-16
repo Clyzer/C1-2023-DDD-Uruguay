@@ -1,4 +1,3 @@
 export interface IDeleteInvoiceCommand {
-    invoiceId: string;
+  invoiceId: string;
 }
-  

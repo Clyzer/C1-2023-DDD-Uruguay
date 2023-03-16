@@ -33,7 +33,7 @@ import {
 @Module({
   imports: [
     TypeOrmModule.forRootAsync({
-      useClass: TypeOrmMySqlConfigService
+      useClass: TypeOrmMySqlConfigService,
     }),
 
     TypeOrmModule.forFeature([
@@ -43,8 +43,8 @@ import {
       FeeMySqlEntity,
       KitMySqlEntity,
       InvoiceMySqlEntity,
-      OrderMySqlEntity
-    ])
+      OrderMySqlEntity,
+    ]),
   ],
   providers: [
     BenefitedMySqlService,
@@ -61,7 +61,7 @@ import {
     FeeRepository,
     InvoiceRepository,
     KitRepository,
-    OrderRepository
+    OrderRepository,
   ],
   exports: [
     BenefitedMySqlService,
@@ -78,7 +78,7 @@ import {
     FeeRepository,
     InvoiceRepository,
     KitRepository,
-    OrderRepository
+    OrderRepository,
   ],
 })
 export class MysqlModule {}

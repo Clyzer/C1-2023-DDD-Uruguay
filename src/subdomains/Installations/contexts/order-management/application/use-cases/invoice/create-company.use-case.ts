@@ -7,12 +7,8 @@ import { InvoiceAggregate } from '../../../domain/aggregates';
 import { CompanyDomainEntityBase } from '../../../domain/entities';
 import { ICompanyDomainEntity } from '../../../domain/entities/interfaces';
 import { CreatedInvoiceEventPublisherBase } from '../../../domain/events';
-import {
-  ICreateCompanyCommand,
-} from '../../../domain/interfaces/commands/invoice';
-import {
-  ICreateCompanyResponse,
-} from '../../../domain/interfaces/responses/invoice';
+import { ICreateCompanyCommand } from '../../../domain/interfaces/commands/invoice';
+import { ICreateCompanyResponse } from '../../../domain/interfaces/responses/invoice';
 import { IInvoiceDomainService } from '../../../domain/services';
 import {
   CompanyBankAccountValueObject,
@@ -21,7 +17,7 @@ import {
 
 export class CreateCompanyUseCase<
     Command extends ICreateCompanyCommand = ICreateCompanyCommand,
-    Response extends ICreateCompanyResponse = ICreateCompanyResponse
+    Response extends ICreateCompanyResponse = ICreateCompanyResponse,
   >
   extends ValueObjectErrorHandler
   implements IUseCase<Command, Response>
@@ -30,7 +26,7 @@ export class CreateCompanyUseCase<
 
   constructor(
     private readonly invoiceService: IInvoiceDomainService,
-    private readonly createdInvoiceEventPublisherBase: CreatedInvoiceEventPublisherBase
+    private readonly createdInvoiceEventPublisherBase: CreatedInvoiceEventPublisherBase,
   ) {
     super();
     this.invoiceAggregateRoot = new InvoiceAggregate({
@@ -46,7 +42,7 @@ export class CreateCompanyUseCase<
   }
 
   private async executeCommand(
-    command: Command
+    command: Command,
   ): Promise<CompanyDomainEntityBase | null> {
     const ValueObject = this.createValueObject(command);
     this.validateValueObject(ValueObject);
@@ -55,8 +51,10 @@ export class CreateCompanyUseCase<
   }
 
   private createValueObject(command: Command): ICompanyDomainEntity {
-    const name = new CompanyNameValueObject(command.name);
-    const bankAccount = new CompanyBankAccountValueObject(command.bankAccount);
+    const name = new CompanyNameValueObject(command.name.valueOf());
+    const bankAccount = new CompanyBankAccountValueObject(
+      command.bankAccount.valueOf(),
+    );
 
     return {
       name,
@@ -78,13 +76,13 @@ export class CreateCompanyUseCase<
 
     if (this.hasErrors() === true)
       throw new ValueObjectException(
-        "Hay algunos errores en el comando ejecutado por createCompanyUserCase",
-        this.getErrors()
+        'Hay algunos errores en el comando ejecutado por createCompanyUserCase',
+        this.getErrors(),
       );
   }
 
   private createEntityCompanyDomain(
-    valueObject: ICompanyDomainEntity
+    valueObject: ICompanyDomainEntity,
   ): CompanyDomainEntityBase {
     const { name, bankAccount } = valueObject;
 
@@ -94,8 +92,8 @@ export class CreateCompanyUseCase<
     });
   }
 
-  private executeInvoiceAggregateRoot(
-    entity: CompanyDomainEntityBase
+  private async executeInvoiceAggregateRoot(
+    entity: CompanyDomainEntityBase,
   ): Promise<CompanyDomainEntityBase | null> {
     return this.invoiceAggregateRoot.createCompany(entity);
   }

@@ -1,4 +1,4 @@
-import { InvoiceStatusValueObject } from "../../../value-objects/invoice";
+import { InvoiceStatusValueObject } from '../../../value-objects/invoice';
 
 export interface IInvoiceChangeStatusResponse {
   success: boolean;

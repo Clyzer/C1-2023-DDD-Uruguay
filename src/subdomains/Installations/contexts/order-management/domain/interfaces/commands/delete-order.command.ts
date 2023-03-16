@@ -1,4 +1,3 @@
 export interface IDeleteOrderCommand {
-    orderId: string;
+  orderId: string;
 }
-  

@@ -8,18 +8,14 @@ import {
 import { InvoiceAggregate } from '../../../domain/aggregates';
 import { CompanyDomainEntityBase } from '../../../domain/entities';
 import { CreatedInvoiceEventPublisherBase } from '../../../domain/events';
-import {
-  IUpdateCompanyNameCommand,
-} from '../../../domain/interfaces/commands/invoice';
-import {
-  IUpdateCompanyNameResponse,
-} from '../../../domain/interfaces/responses/invoice';
+import { IUpdateCompanyNameCommand } from '../../../domain/interfaces/commands/invoice';
+import { IUpdateCompanyNameResponse } from '../../../domain/interfaces/responses/invoice';
 import { IInvoiceDomainService } from '../../../domain/services';
 import { CompanyNameValueObject } from '../../../domain/value-objects';
 
 export class UpdateCompanyNameUseCase<
     Command extends IUpdateCompanyNameCommand = IUpdateCompanyNameCommand,
-    Response extends IUpdateCompanyNameResponse = IUpdateCompanyNameResponse
+    Response extends IUpdateCompanyNameResponse = IUpdateCompanyNameResponse,
   >
   extends ValueObjectErrorHandler
   implements IUseCase<Command, Response>
@@ -29,7 +25,7 @@ export class UpdateCompanyNameUseCase<
   constructor(
     private readonly invoiceService: IInvoiceDomainService,
     private readonly invoiceGet: GetInvoiceUserCase,
-    private readonly createdInvoiceEventPublisherBase: CreatedInvoiceEventPublisherBase
+    private readonly createdInvoiceEventPublisherBase: CreatedInvoiceEventPublisherBase,
   ) {
     super();
     this.invoiceAggregateRoot = new InvoiceAggregate({
@@ -45,23 +41,27 @@ export class UpdateCompanyNameUseCase<
   }
 
   private async executeCommand(
-    command: Command
+    command: Command,
   ): Promise<CompanyDomainEntityBase | null> {
     let name: CompanyNameValueObject;
-    if (typeof command.name != "string"){
+    if (typeof command.name != 'string') {
       name = this.validateObjectValue(command.name);
     } else name = new CompanyNameValueObject(command.name.toString());
-    const invoice = await this.invoiceAggregateRoot.getCompany(command.companyId);
+    const invoice = await this.invoiceAggregateRoot.getCompany(
+      command.companyId,
+    );
     if (invoice) {
       invoice.name = name;
       return invoice;
     } else
       throw new AggregateUpdateException(
-        "Hay algunos errores en el comando ejecutado por UpdateCompanyNameUserCase"
+        'Hay algunos errores en el comando ejecutado por UpdateCompanyNameUserCase',
       );
   }
 
-  private validateObjectValue(valueObject: CompanyNameValueObject): CompanyNameValueObject {
+  private validateObjectValue(
+    valueObject: CompanyNameValueObject,
+  ): CompanyNameValueObject {
     if (
       valueObject instanceof CompanyNameValueObject &&
       valueObject.hasErrors()
@@ -70,10 +70,10 @@ export class UpdateCompanyNameUseCase<
 
     if (this.hasErrors() === true)
       throw new ValueObjectException(
-        "Hay algunos errores en el comando ejecutado por UpdateCompanyNameUserCase",
-        this.getErrors()
+        'Hay algunos errores en el comando ejecutado por UpdateCompanyNameUserCase',
+        this.getErrors(),
       );
-    
+
     return valueObject;
   }
 }

@@ -1,3 +1,3 @@
 export interface IDeleteFeeCommand {
-    feeId: string;
+  feeId: string;
 }

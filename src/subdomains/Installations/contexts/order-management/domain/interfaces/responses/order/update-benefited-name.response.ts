@@ -1,4 +1,4 @@
-import { BenefitedDomainEntityBase } from "../../../entities/order";
+import { BenefitedDomainEntityBase } from '../../../entities/order';
 
 export interface IUpdateBenefitedNameResponse {
   success: boolean;

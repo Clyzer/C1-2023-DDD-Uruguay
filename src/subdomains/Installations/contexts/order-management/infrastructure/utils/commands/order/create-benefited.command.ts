@@ -2,9 +2,7 @@ import { IsString } from 'class-validator';
 
 import { ApiProperty } from '@nestjs/swagger';
 
-import {
-  ICreateBenefitedCommand,
-} from '../../../../domain/interfaces/commands/order';
+import { ICreateBenefitedCommand } from '../../../../domain/interfaces/commands/order';
 
 export class CreateBenefitedCommand implements ICreateBenefitedCommand {
   @ApiProperty()

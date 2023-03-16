@@ -1,5 +1,4 @@
 export interface IDeleteOrderResponse {
-    success: boolean;
-    data: boolean;
+  success: boolean;
+  data: boolean;
 }
-  

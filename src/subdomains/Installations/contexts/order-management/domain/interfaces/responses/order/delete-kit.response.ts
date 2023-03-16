@@ -1,4 +1,4 @@
 export interface IDeleteKitResponse {
-    success: boolean;
-    data: boolean;
+  success: boolean;
+  data: boolean;
 }

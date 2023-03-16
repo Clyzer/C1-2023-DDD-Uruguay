@@ -1,3 +1,3 @@
 export interface IGetFeeCommand {
-    feeId: string;
+  feeId: string;
 }

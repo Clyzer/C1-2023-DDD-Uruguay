@@ -7,12 +7,8 @@ import { OrderAggregate } from '../../../domain/aggregates';
 import { BenefitedDomainEntityBase } from '../../../domain/entities';
 import { IBenefitedDomainEntity } from '../../../domain/entities/interfaces';
 import { CreatedOrderEventPublisherBase } from '../../../domain/events';
-import {
-  ICreateBenefitedCommand,
-} from '../../../domain/interfaces/commands/order';
-import {
-  ICreateBenefitedResponse,
-} from '../../../domain/interfaces/responses/order';
+import { ICreateBenefitedCommand } from '../../../domain/interfaces/commands/order';
+import { ICreateBenefitedResponse } from '../../../domain/interfaces/responses/order';
 import { IOrderDomainService } from '../../../domain/services';
 import {
   BenefitedAddressValueObject,
@@ -23,7 +19,7 @@ import {
 
 export class CreateBenefitedUseCase<
     Command extends ICreateBenefitedCommand = ICreateBenefitedCommand,
-    Response extends ICreateBenefitedResponse = ICreateBenefitedResponse
+    Response extends ICreateBenefitedResponse = ICreateBenefitedResponse,
   >
   extends ValueObjectErrorHandler
   implements IUseCase<Command, Response>
@@ -32,7 +28,7 @@ export class CreateBenefitedUseCase<
 
   constructor(
     private readonly orderService: IOrderDomainService,
-    private readonly createdOrderEventPublisherBase: CreatedOrderEventPublisherBase
+    private readonly createdOrderEventPublisherBase: CreatedOrderEventPublisherBase,
   ) {
     super();
     this.orderAggregateRoot = new OrderAggregate({
@@ -48,7 +44,7 @@ export class CreateBenefitedUseCase<
   }
 
   private async executeCommand(
-    command: Command
+    command: Command,
   ): Promise<BenefitedDomainEntityBase | null> {
     const ValueObject = this.createValueObject(command);
     this.validateValueObject(ValueObject);
@@ -57,9 +53,9 @@ export class CreateBenefitedUseCase<
   }
 
   private createValueObject(command: Command): IBenefitedDomainEntity {
-    const name = new BenefitedNameValueObject(command.name);
-    const phone = new BenefitedPhoneValueObject(command.phone);
-    const address = new BenefitedAddressValueObject(command.address);
+    const name = new BenefitedNameValueObject(command.name.valueOf());
+    const phone = new BenefitedPhoneValueObject(command.phone.valueOf());
+    const address = new BenefitedAddressValueObject(command.address.valueOf());
     const companyId =
       command.companyId instanceof BenefitedCompanyIdValueObject
         ? command.companyId
@@ -93,13 +89,13 @@ export class CreateBenefitedUseCase<
 
     if (this.hasErrors() === true)
       throw new ValueObjectException(
-        "Hay algunos errores en el comando ejecutado por createBenefitedUserCase",
-        this.getErrors()
+        'Hay algunos errores en el comando ejecutado por createBenefitedUserCase',
+        this.getErrors(),
       );
   }
 
   private createEntityBenefitedDomain(
-    valueObject: IBenefitedDomainEntity
+    valueObject: IBenefitedDomainEntity,
   ): BenefitedDomainEntityBase {
     const { name, phone, address, companyId } = valueObject;
 
@@ -111,8 +107,8 @@ export class CreateBenefitedUseCase<
     });
   }
 
-  private executeOrderAggregateRoot(
-    entity: BenefitedDomainEntityBase
+  private async executeOrderAggregateRoot(
+    entity: BenefitedDomainEntityBase,
   ): Promise<BenefitedDomainEntityBase | null> {
     return this.orderAggregateRoot.createBenefited(entity);
   }

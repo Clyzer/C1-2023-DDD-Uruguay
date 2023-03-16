@@ -1,4 +1,4 @@
-import { FeeDomainEntityBase } from "../../../entities/invoice";
+import { FeeDomainEntityBase } from '../../../entities/invoice';
 
 export interface IUpdateFeeTaxResponse {
   success: boolean;

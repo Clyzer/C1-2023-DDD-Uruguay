@@ -6,26 +6,23 @@ import { InvoiceRepository } from '../repositories';
 
 @Injectable()
 export class InvoiceMySqlService
-    implements IInvoiceDomainService<InvoiceMySqlEntity> {
+  implements IInvoiceDomainService<InvoiceMySqlEntity>
+{
+  constructor(private readonly invoiceRepository: InvoiceRepository) {}
 
-    constructor(
-        private readonly invoiceRepository: InvoiceRepository,
-    ) { }
+  createInvoice(invoice: InvoiceMySqlEntity): Promise<InvoiceMySqlEntity> {
+    return this.invoiceRepository.create(invoice);
+  }
 
-    createInvoice(invoice: InvoiceMySqlEntity): Promise<InvoiceMySqlEntity> {
-        return this.invoiceRepository.create(invoice);
-    }
-    
-    getInvoice(invoiceId: string): Promise<InvoiceMySqlEntity> {
-        return this.invoiceRepository.findById(invoiceId);
-    }
+  getInvoice(invoiceId: string): Promise<InvoiceMySqlEntity> {
+    return this.invoiceRepository.findById(invoiceId);
+  }
 
-    deleteInvoice(invoiceId: string): Promise<boolean> {
-        return this.invoiceRepository.delete(invoiceId);
-    }
+  deleteInvoice(invoiceId: string): Promise<boolean> {
+    return this.invoiceRepository.delete(invoiceId);
+  }
 
-    changeStatus(invoiceId: string): Promise<boolean> {
-        return this.invoiceRepository.changeStatus(invoiceId);
-    }
-
+  changeStatus(invoiceId: string): Promise<boolean> {
+    return this.invoiceRepository.changeStatus(invoiceId);
+  }
 }

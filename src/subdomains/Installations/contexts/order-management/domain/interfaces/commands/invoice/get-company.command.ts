@@ -1,3 +1,3 @@
 export interface IGetCompanyCommand {
-    companyId: string;
+  companyId: string;
 }

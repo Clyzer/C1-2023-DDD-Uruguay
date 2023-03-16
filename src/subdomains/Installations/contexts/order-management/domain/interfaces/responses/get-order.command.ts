@@ -1,4 +1,4 @@
-import { OrderDomainEntityBase } from "../../entities";
+import { OrderDomainEntityBase } from '../../entities';
 
 export interface IGetOrderResponse {
   success: boolean;

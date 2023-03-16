@@ -1,12 +1,12 @@
 import { EventPublisherBase } from 'src/libs';
 
 export abstract class DeletedOrderEventPublisherBase<
-  Response = boolean
+  Response = boolean,
 > extends EventPublisherBase<Response> {
   publish<Result = any>(): Promise<Result> {
     return this.emit(
-      "order_management.order.order_deleted",
-      JSON.stringify({ data: this.response })
+      'order_management.deleted_order',
+      JSON.stringify({ data: this.response }),
     );
   }
 }

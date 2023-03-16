@@ -2,9 +2,7 @@ import { IsString } from 'class-validator';
 
 import { ApiProperty } from '@nestjs/swagger';
 
-import {
-  IUpdateFeeTaxCommand,
-} from '../../../../domain/interfaces/commands/invoice';
+import { IUpdateFeeTaxCommand } from '../../../../domain/interfaces/commands/invoice';
 
 export class UpdateFeeTaxCommand implements IUpdateFeeTaxCommand {
   @ApiProperty()

@@ -1,8 +1,4 @@
-import {
-  Column,
-  Entity,
-  PrimaryGeneratedColumn,
-} from 'typeorm';
+import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
 
 import { KitDomainEntityBase } from '../../../../../../domain/entities/order';
 
@@ -11,15 +7,15 @@ export class KitMySqlEntity extends KitDomainEntityBase {
   @PrimaryGeneratedColumn('uuid')
   kitId: string;
 
-  @Column({nullable: true})
+  @Column({ nullable: true })
   model: string;
-  
-  @Column({type: 'bigint', nullable: true})
+
+  @Column({ type: 'bigint', nullable: true })
   createdAt: number;
 
-  @Column({type: 'bigint', nullable: true})
+  @Column({ type: 'bigint', nullable: true })
   updatedAt: number;
 
-  @Column({type: 'bigint', nullable: true})
+  @Column({ type: 'bigint', nullable: true })
   deletedAt: number;
 }

@@ -1,4 +1,4 @@
-import { EmployedDomainEntityBase } from "../../../entities/order";
+import { EmployedDomainEntityBase } from '../../../entities/order';
 
 export interface IUpdateEmployedPhoneResponse {
   success: boolean;

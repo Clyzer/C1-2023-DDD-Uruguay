@@ -1,4 +1,3 @@
 export interface IDeleteKitCommand {
-    kitId: string;
+  kitId: string;
 }
-  

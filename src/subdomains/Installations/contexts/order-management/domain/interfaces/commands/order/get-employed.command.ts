@@ -1,4 +1,3 @@
 export interface IGetEmployedCommand {
-    employedId: string;
+  employedId: string;
 }
-  

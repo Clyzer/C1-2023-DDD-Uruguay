@@ -1,4 +1,4 @@
-import { OrderStatusValueObject } from "../../../value-objects/order";
+import { OrderStatusValueObject } from '../../../value-objects/order';
 
 export interface IOrderChangeStatusResponse {
   success: boolean;

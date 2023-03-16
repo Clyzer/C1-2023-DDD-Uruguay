@@ -1,4 +1,3 @@
 export interface IGetBenefitedCommand {
-    benefitedId: string;
+  benefitedId: string;
 }
-  

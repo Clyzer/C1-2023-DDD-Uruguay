@@ -8,18 +8,14 @@ import {
 import { OrderAggregate } from '../../../domain/aggregates';
 import { FeeDomainEntityBase } from '../../../domain/entities';
 import { CreatedOrderEventPublisherBase } from '../../../domain/events';
-import {
-  IUpdateBenefitedCompanyIdCommand,
-} from '../../../domain/interfaces/commands/order';
-import {
-  IUpdateBenefitedCompanyIdResponse,
-} from '../../../domain/interfaces/responses/order';
+import { IUpdateBenefitedCompanyIdCommand } from '../../../domain/interfaces/commands/order';
+import { IUpdateBenefitedCompanyIdResponse } from '../../../domain/interfaces/responses/order';
 import { IOrderDomainService } from '../../../domain/services';
 import { BenefitedCompanyIdValueObject } from '../../../domain/value-objects';
 
 export class UpdateBenefitedCompanyIdUseCase<
     Command extends IUpdateBenefitedCompanyIdCommand = IUpdateBenefitedCompanyIdCommand,
-    Response extends IUpdateBenefitedCompanyIdResponse = IUpdateBenefitedCompanyIdResponse
+    Response extends IUpdateBenefitedCompanyIdResponse = IUpdateBenefitedCompanyIdResponse,
   >
   extends ValueObjectErrorHandler
   implements IUseCase<Command, Response>
@@ -29,7 +25,7 @@ export class UpdateBenefitedCompanyIdUseCase<
   constructor(
     private readonly orderService: IOrderDomainService,
     private readonly orderGet: GetOrderUserCase,
-    private readonly createdOrderEventPublisherBase: CreatedOrderEventPublisherBase
+    private readonly createdOrderEventPublisherBase: CreatedOrderEventPublisherBase,
   ) {
     super();
     this.orderAggregateRoot = new OrderAggregate({
@@ -45,24 +41,29 @@ export class UpdateBenefitedCompanyIdUseCase<
   }
 
   private async executeCommand(
-    command: Command
+    command: Command,
   ): Promise<FeeDomainEntityBase | null> {
     let companyId: BenefitedCompanyIdValueObject;
-    if (typeof command.companyId != "string"){
+    if (typeof command.companyId != 'string') {
       companyId = this.validateObjectValue(command.companyId);
-    } else companyId = new BenefitedCompanyIdValueObject(command.companyId.toString());
-    const order = await this.orderAggregateRoot.getBenefited(command.benefitedId);
+    } else
+      companyId = new BenefitedCompanyIdValueObject(
+        command.companyId.toString(),
+      );
+    const order = await this.orderAggregateRoot.getBenefited(
+      command.benefitedId,
+    );
     if (order) {
       order.companyId = companyId;
       return order;
     } else
       throw new AggregateUpdateException(
-        "Hay algunos errores en el comando ejecutado por UpdateBenefitedCompanyIdUserCase"
+        'Hay algunos errores en el comando ejecutado por UpdateBenefitedCompanyIdUserCase',
       );
   }
 
   private validateObjectValue(
-    valueObject: BenefitedCompanyIdValueObject
+    valueObject: BenefitedCompanyIdValueObject,
   ): BenefitedCompanyIdValueObject {
     if (
       valueObject instanceof BenefitedCompanyIdValueObject &&
@@ -72,10 +73,10 @@ export class UpdateBenefitedCompanyIdUseCase<
 
     if (this.hasErrors() === true)
       throw new ValueObjectException(
-        "Hay algunos errores en el comando ejecutado por UpdateBenefitedCompanyIdUserCase",
-        this.getErrors()
+        'Hay algunos errores en el comando ejecutado por UpdateBenefitedCompanyIdUserCase',
+        this.getErrors(),
       );
-    
+
     return valueObject;
   }
 }

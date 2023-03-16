@@ -8,18 +8,14 @@ import {
 import { OrderAggregate } from '../../../domain/aggregates';
 import { FeeDomainEntityBase } from '../../../domain/entities';
 import { CreatedOrderEventPublisherBase } from '../../../domain/events';
-import {
-  IUpdateEmployedPhoneCommand,
-} from '../../../domain/interfaces/commands/order';
-import {
-  IUpdateEmployedPhoneResponse,
-} from '../../../domain/interfaces/responses/order';
+import { IUpdateEmployedPhoneCommand } from '../../../domain/interfaces/commands/order';
+import { IUpdateEmployedPhoneResponse } from '../../../domain/interfaces/responses/order';
 import { IOrderDomainService } from '../../../domain/services';
 import { EmployedPhoneValueObject } from '../../../domain/value-objects';
 
 export class UpdateEmployedPhoneUseCase<
     Command extends IUpdateEmployedPhoneCommand = IUpdateEmployedPhoneCommand,
-    Response extends IUpdateEmployedPhoneResponse = IUpdateEmployedPhoneResponse
+    Response extends IUpdateEmployedPhoneResponse = IUpdateEmployedPhoneResponse,
   >
   extends ValueObjectErrorHandler
   implements IUseCase<Command, Response>
@@ -29,7 +25,7 @@ export class UpdateEmployedPhoneUseCase<
   constructor(
     private readonly orderService: IOrderDomainService,
     private readonly orderGet: GetOrderUserCase,
-    private readonly createdOrderEventPublisherBase: CreatedOrderEventPublisherBase
+    private readonly createdOrderEventPublisherBase: CreatedOrderEventPublisherBase,
   ) {
     super();
     this.orderAggregateRoot = new OrderAggregate({
@@ -45,10 +41,10 @@ export class UpdateEmployedPhoneUseCase<
   }
 
   private async executeCommand(
-    command: Command
+    command: Command,
   ): Promise<FeeDomainEntityBase | null> {
     let phone: EmployedPhoneValueObject;
-    if (typeof command.phone != "string"){
+    if (typeof command.phone != 'string') {
       phone = this.validateObjectValue(command.phone);
     } else phone = new EmployedPhoneValueObject(command.phone.toString());
     const order = await this.orderAggregateRoot.getEmployed(command.employedId);
@@ -57,11 +53,13 @@ export class UpdateEmployedPhoneUseCase<
       return order;
     } else
       throw new AggregateUpdateException(
-        "Hay algunos errores en el comando ejecutado por UpdateEmployedPhoneUserCase"
+        'Hay algunos errores en el comando ejecutado por UpdateEmployedPhoneUserCase',
       );
   }
 
-  private validateObjectValue(valueObject: EmployedPhoneValueObject): EmployedPhoneValueObject {
+  private validateObjectValue(
+    valueObject: EmployedPhoneValueObject,
+  ): EmployedPhoneValueObject {
     if (
       valueObject instanceof EmployedPhoneValueObject &&
       valueObject.hasErrors()
@@ -70,8 +68,8 @@ export class UpdateEmployedPhoneUseCase<
 
     if (this.hasErrors() === true)
       throw new ValueObjectException(
-        "Hay algunos errores en el comando ejecutado por UpdateEmployedPhoneUserCase",
-        this.getErrors()
+        'Hay algunos errores en el comando ejecutado por UpdateEmployedPhoneUserCase',
+        this.getErrors(),
       );
 
     return valueObject;

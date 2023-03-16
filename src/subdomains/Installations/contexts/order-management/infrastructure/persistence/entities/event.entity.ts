@@ -1,9 +1,9 @@
 export class EventEntity {
-    id: string;
+  id: string;
 
-    type: string;
+  type: string;
 
-    data: string;
+  data: string;
 
-    createdAt: number;
+  createdAt: number;
 }

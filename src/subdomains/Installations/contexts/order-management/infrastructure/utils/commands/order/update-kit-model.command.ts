@@ -2,9 +2,7 @@ import { IsString } from 'class-validator';
 
 import { ApiProperty } from '@nestjs/swagger';
 
-import {
-  IUpdateKitModelCommand,
-} from '../../../../domain/interfaces/commands/order';
+import { IUpdateKitModelCommand } from '../../../../domain/interfaces/commands/order';
 
 export class UpdateKitModelCommand implements IUpdateKitModelCommand {
   @ApiProperty()

@@ -1,5 +1,9 @@
 import { ValueObjectBase } from 'src/libs/';
-import { IsNumber, NumberMax, NumberMin } from 'src/libs/validations';
+import {
+  IsNumber,
+  NumberMax,
+  NumberMin,
+} from 'src/libs/validations';
 
 export class FeeTaxValueObject extends ValueObjectBase<number> {
   constructor(value?: number) {
@@ -11,7 +15,7 @@ export class FeeTaxValueObject extends ValueObjectBase<number> {
   }
 
   private validateStructure(): void {
-    if (this.value && IsNumber(this.value)) {
+    if (this.value && !IsNumber(this.value)) {
       const error = {
         field: 'FeeTax',
         message: "Tax of fee don't contains a number",

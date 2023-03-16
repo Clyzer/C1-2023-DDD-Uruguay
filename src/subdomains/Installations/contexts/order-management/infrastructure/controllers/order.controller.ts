@@ -1,7 +1,12 @@
-import { Body, Controller, Post } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Post,
+} from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 
 import {
+  ChangeOrderStatusUserCase,
   CreateOrderUseCase,
   DeleteOrderUserCase,
   GetOrderUserCase,
@@ -10,12 +15,14 @@ import {
   CreatedOrderPublisher,
   DeletedOrderPublisher,
   GettedOrderPublisher,
+  OrderStatusChangedPublisher,
 } from '../messaging/publisher';
 import { OrderService } from '../persistence/services';
 import {
   CreateOrderCommand,
   DeleteOrderCommand,
   GetOrderCommand,
+  OrderChangeStatusCommand,
 } from '../utils/commands';
 
 @ApiTags('order')
@@ -26,6 +33,7 @@ export class OrderController {
     private readonly createdOrderEventPublisher: CreatedOrderPublisher,
     private readonly gettedOrderEventPublisher: GettedOrderPublisher,
     private readonly deletedOrderEventPublisher: DeletedOrderPublisher,
+    private readonly orderStatusChangedPublisher: OrderStatusChangedPublisher
   ) {}
 
   @Post('/create')
@@ -51,6 +59,15 @@ export class OrderController {
     const useCase = new DeleteOrderUserCase(
       this.orderService,
       this.deletedOrderEventPublisher,
+    );
+    return await useCase.execute(command);
+  }
+
+  @Post('/change-status')
+  async changeStatus(@Body() command: OrderChangeStatusCommand) {
+    const useCase = new ChangeOrderStatusUserCase(
+      this.orderService,
+      this.orderStatusChangedPublisher,
     );
     return await useCase.execute(command);
   }

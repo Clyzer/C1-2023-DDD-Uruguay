@@ -1,4 +1,9 @@
-import { IsBoolean, IsNumber, IsObject, IsString } from 'class-validator';
+import {
+  IsBoolean,
+  IsNumber,
+  IsObject,
+  IsString,
+} from 'class-validator';
 
 import { ApiProperty } from '@nestjs/swagger';
 
@@ -9,9 +14,6 @@ import {
 } from '../../../domain/interfaces/commands';
 
 export class CreateInvoiceCommand implements ICreateInvoiceCommand {
-  @ApiProperty()
-  @IsString()
-  invoiceId?: string;
 
   @ApiProperty()
   @IsBoolean()
@@ -19,11 +21,19 @@ export class CreateInvoiceCommand implements ICreateInvoiceCommand {
 
   @ApiProperty()
   @IsObject()
-  company: ICreateCompanyCommand;
+  company?: ICreateCompanyCommand;
 
   @ApiProperty()
   @IsObject()
-  fee: ICreateFeeCommand;
+  fee?: ICreateFeeCommand;
+
+  @ApiProperty()
+  @IsString()
+  companyId?: string;
+
+  @ApiProperty()
+  @IsString()
+  feeId?: string;
 
   @ApiProperty()
   @IsNumber()

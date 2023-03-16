@@ -5,7 +5,6 @@ import {
 } from '../../entities/interfaces';
 
 export interface ICreateOrderCommand {
-  orderId?: string;
   status?: boolean;
   kit?: IKitDomainEntity;
   employed?: IEmployedDomainEntity;

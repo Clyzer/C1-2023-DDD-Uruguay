@@ -20,6 +20,7 @@ import {
   DeletedFeePublisher,
   GettedCompanyPublisher,
   GettedFeePublisher,
+  InvoiceStatusChangedPublisher,
   NameUpdatedCompanyPublisher,
   TaxUpdatedFeePublisher,
 } from './publisher/invoice';
@@ -38,6 +39,7 @@ import {
   ModelUpdatedKitPublisher,
   NameUpdatedBenefitedPublisher,
   NameUpdatedEmployedPublisher,
+  OrderStatusChangedPublisher,
   PhoneUpdatedBenefitedPublisher,
   PhoneUpdatedEmployedPublisher,
 } from './publisher/order';
@@ -102,6 +104,8 @@ import {
     GettedOrderPublisher,
     DeletedInvoicePublisher,
     DeletedOrderPublisher,
+    InvoiceStatusChangedPublisher,
+    OrderStatusChangedPublisher,
     CreatedCompanyPublisher,
     GettedCompanyPublisher,
     DeletedCompanyPublisher,
@@ -136,6 +140,8 @@ import {
     GettedOrderPublisher,
     DeletedInvoicePublisher,
     DeletedOrderPublisher,
+    InvoiceStatusChangedPublisher,
+    OrderStatusChangedPublisher,
     CreatedCompanyPublisher,
     GettedCompanyPublisher,
     DeletedCompanyPublisher,

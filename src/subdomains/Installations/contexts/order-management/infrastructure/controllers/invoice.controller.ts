@@ -1,7 +1,12 @@
-import { Body, Controller, Post } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Post,
+} from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 
 import {
+  ChangeInvoiceStatusUserCase,
   CreateInvoiceUseCase,
   DeleteInvoiceUserCase,
   GetInvoiceUserCase,
@@ -10,12 +15,14 @@ import {
   CreatedInvoicePublisher,
   DeletedInvoicePublisher,
   GettedInvoicePublisher,
+  InvoiceStatusChangedPublisher,
 } from '../messaging/publisher';
 import { InvoiceService } from '../persistence/services';
 import {
   CreateInvoiceCommand,
   DeleteInvoiceCommand,
   GetInvoiceCommand,
+  InvoiceChangeStatusCommand,
 } from '../utils/commands';
 
 @ApiTags('invoice')
@@ -26,6 +33,7 @@ export class InvoiceController {
     private readonly createdInvoiceEventPublisher: CreatedInvoicePublisher,
     private readonly gettedInvoiceEventPublisher: GettedInvoicePublisher,
     private readonly deletedInvoiceEventPublisher: DeletedInvoicePublisher,
+    private readonly invoiceStatusChangedPublisher: InvoiceStatusChangedPublisher
   ) {}
 
   @Post('/create')
@@ -51,6 +59,15 @@ export class InvoiceController {
     const useCase = new DeleteInvoiceUserCase(
       this.invoiceService,
       this.deletedInvoiceEventPublisher,
+    );
+    return await useCase.execute(command);
+  }
+
+  @Post('/change-status')
+  async changeStatus(@Body() command: InvoiceChangeStatusCommand) {
+    const useCase = new ChangeInvoiceStatusUserCase(
+      this.invoiceService,
+      this.invoiceStatusChangedPublisher,
     );
     return await useCase.execute(command);
   }

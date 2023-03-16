@@ -1,18 +1,28 @@
 import {
-  AggregateUpdateException,
   IUseCase,
   ValueObjectErrorHandler,
   ValueObjectException,
 } from '../../../../../../../libs/sofka';
 import { InvoiceAggregate } from '../../../domain/aggregates';
-import { CompanyDomainEntityBase } from '../../../domain/entities';
-import { CreatedInvoiceEventPublisherBase } from '../../../domain/events';
-import { IUpdateCompanyBankAccountCommand } from '../../../domain/interfaces/commands/invoice';
-import { IUpdateCompanyBankAccountResponse } from '../../../domain/interfaces/responses/invoice';
-import { IInvoiceDomainService } from '../../../domain/services';
-import { CompanyBankAccountValueObject } from '../../../domain/value-objects';
+import { ICompanyDomainEntity } from '../../../domain/entities/interfaces/';
+import { CompanyDomainEntityBase } from '../../../domain/entities/invoice';
+import {
+  InvoiceCompanyBankAccountUpdatedEventPublisherBase,
+} from '../../../domain/events/publishers/invoice';
+import {
+  IUpdateCompanyBankAccountCommand,
+} from '../../../domain/interfaces/commands';
+import {
+  IUpdateCompanyBankAccountResponse,
+} from '../../../domain/interfaces/responses';
+import { ICompanyDomainService } from '../../../domain/services/invoice';
+import {
+  CompanyBankAccountValueObject,
+  CompanyIdValueObject,
+  CompanyNameValueObject,
+} from '../../../domain/value-objects/invoice';
 
-export class UpdateCompanyBankAccountUseCase<
+export class UpdateCompanyBankAccountUserCase<
     Command extends IUpdateCompanyBankAccountCommand = IUpdateCompanyBankAccountCommand,
     Response extends IUpdateCompanyBankAccountResponse = IUpdateCompanyBankAccountResponse,
   >
@@ -22,13 +32,13 @@ export class UpdateCompanyBankAccountUseCase<
   private readonly invoiceAggregateRoot: InvoiceAggregate;
 
   constructor(
-    private readonly invoiceService: IInvoiceDomainService,
-    private readonly createdInvoiceEventPublisherBase: CreatedInvoiceEventPublisherBase,
+    private readonly companyService: ICompanyDomainService,
+    private readonly invoiceCompanyBankAccountUpdatedEventPublisherBase: InvoiceCompanyBankAccountUpdatedEventPublisherBase,
   ) {
     super();
     this.invoiceAggregateRoot = new InvoiceAggregate({
-      invoiceService,
-      createdInvoiceEventPublisherBase,
+      companyService,
+      invoiceCompanyBankAccountUpdatedEventPublisherBase,
     });
   }
 
@@ -41,40 +51,41 @@ export class UpdateCompanyBankAccountUseCase<
   private async executeCommand(
     command: Command,
   ): Promise<CompanyDomainEntityBase | null> {
-    let bankAccount: CompanyBankAccountValueObject;
-    if (typeof command.bankAccount != 'string') {
-      bankAccount = this.validateObjectValue(command.bankAccount);
-    } else
-      bankAccount = new CompanyBankAccountValueObject(
-        command.bankAccount.toString(),
-      );
-    const invoice = await this.invoiceAggregateRoot.getCompany(
-      command.companyId,
+    const company = await this.invoiceAggregateRoot.getCompany(command.companyId.valueOf());
+    this.validateEntity(company);
+    company.bankAccount = new CompanyBankAccountValueObject(command.bankAccount.valueOf());
+    return await this.executeInvoiceAggregateRoot(
+      company.companyId.valueOf(),
+      company
     );
-    if (invoice) {
-      invoice.bankAccount = bankAccount;
-      return invoice;
-    } else
-      throw new AggregateUpdateException(
-        'Hay algunos errores en el comando ejecutado por UpdateCompanyBankAccountUserCase',
-      );
   }
 
-  private validateObjectValue(
-    valueObject: CompanyBankAccountValueObject,
-  ): CompanyBankAccountValueObject {
+  private validateEntity(company: ICompanyDomainEntity): void {
+    const { companyId, name, bankAccount } = company;
+
+    if (companyId instanceof CompanyIdValueObject && companyId.hasErrors())
+      this.setErrors(companyId.getErrors());
+
+    if (name instanceof CompanyNameValueObject && name.hasErrors())
+      this.setErrors(name.getErrors());
+
     if (
-      valueObject instanceof CompanyBankAccountValueObject &&
-      valueObject.hasErrors()
+      bankAccount instanceof CompanyBankAccountValueObject &&
+      bankAccount.hasErrors()
     )
-      this.setErrors(valueObject.getErrors());
+      this.setErrors(bankAccount.getErrors());
 
     if (this.hasErrors() === true)
       throw new ValueObjectException(
-        'Hay algunos errores en el comando ejecutado por UpdateCompanyBankAccountUserCase',
+        'Hay algunos errores en el comando ejecutado por UpdateCompanyBankAccount',
         this.getErrors(),
       );
+  }
 
-    return valueObject;
+  private async executeInvoiceAggregateRoot(
+    companyId: string,
+    newCompany: CompanyDomainEntityBase
+  ): Promise<CompanyDomainEntityBase | null> {
+    return this.invoiceAggregateRoot.updateCompanyBankAccount(companyId, newCompany);
   }
 }

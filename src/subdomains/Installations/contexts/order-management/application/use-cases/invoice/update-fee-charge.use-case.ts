@@ -1,19 +1,28 @@
-import { GetInvoiceUserCase } from '../';
 import {
-  AggregateUpdateException,
   IUseCase,
   ValueObjectErrorHandler,
   ValueObjectException,
 } from '../../../../../../../libs/sofka';
 import { InvoiceAggregate } from '../../../domain/aggregates';
-import { FeeDomainEntityBase } from '../../../domain/entities';
-import { CreatedInvoiceEventPublisherBase } from '../../../domain/events';
-import { IUpdateFeeChargeCommand } from '../../../domain/interfaces/commands/invoice';
-import { IUpdateFeeChargeResponse } from '../../../domain/interfaces/responses/invoice';
-import { IInvoiceDomainService } from '../../../domain/services';
-import { FeeChargeValueObject } from '../../../domain/value-objects';
+import { IFeeDomainEntity } from '../../../domain/entities/interfaces/';
+import { FeeDomainEntityBase } from '../../../domain/entities/invoice';
+import {
+  InvoiceFeeChargeUpdatedEventPublisherBase,
+} from '../../../domain/events/publishers/invoice';
+import {
+  IUpdateFeeChargeCommand,
+} from '../../../domain/interfaces/commands/invoice';
+import {
+  IUpdateFeeChargeResponse,
+} from '../../../domain/interfaces/responses/invoice';
+import { IFeeDomainService } from '../../../domain/services/invoice';
+import {
+  FeeChargeValueObject,
+  FeeIdValueObject,
+  FeeTaxValueObject,
+} from '../../../domain/value-objects/invoice';
 
-export class UpdateFeeChargeUseCase<
+export class UpdateFeeChargeUserCase<
     Command extends IUpdateFeeChargeCommand = IUpdateFeeChargeCommand,
     Response extends IUpdateFeeChargeResponse = IUpdateFeeChargeResponse,
   >
@@ -23,14 +32,13 @@ export class UpdateFeeChargeUseCase<
   private readonly invoiceAggregateRoot: InvoiceAggregate;
 
   constructor(
-    private readonly invoiceService: IInvoiceDomainService,
-    private readonly invoiceGet: GetInvoiceUserCase,
-    private readonly createdInvoiceEventPublisherBase: CreatedInvoiceEventPublisherBase,
+    private readonly feeService: IFeeDomainService,
+    private readonly invoiceFeeChargeUpdatedEventPublisherBase: InvoiceFeeChargeUpdatedEventPublisherBase,
   ) {
     super();
     this.invoiceAggregateRoot = new InvoiceAggregate({
-      invoiceService,
-      createdInvoiceEventPublisherBase,
+      feeService,
+      invoiceFeeChargeUpdatedEventPublisherBase,
     });
   }
 
@@ -43,32 +51,38 @@ export class UpdateFeeChargeUseCase<
   private async executeCommand(
     command: Command,
   ): Promise<FeeDomainEntityBase | null> {
-    let charge: FeeChargeValueObject;
-    if (typeof command.charge != 'string') {
-      charge = this.validateObjectValue(command.charge);
-    } else charge = new FeeChargeValueObject(+command.charge);
-    const invoice = await this.invoiceAggregateRoot.getFee(command.feeId);
-    if (invoice) {
-      invoice.charge = charge;
-      return invoice;
-    } else
-      throw new AggregateUpdateException(
-        'Hay algunos errores en el comando ejecutado por UpdateFeeChargeUserCase',
-      );
+    const fee = await this.invoiceAggregateRoot.getFee(command.feeId.valueOf());
+    this.validateEntity(fee);
+    fee.charge = new FeeChargeValueObject(command.charge.valueOf());
+    return await this.executeInvoiceAggregateRoot(
+      fee.feeId.valueOf(),
+      fee
+    );
   }
 
-  private validateObjectValue(
-    valueObject: FeeChargeValueObject,
-  ): FeeChargeValueObject {
-    if (valueObject instanceof FeeChargeValueObject && valueObject.hasErrors())
-      this.setErrors(valueObject.getErrors());
+  private validateEntity(fee: IFeeDomainEntity): void {
+    const { feeId, charge, tax } = fee;
+
+    if (feeId instanceof FeeIdValueObject && feeId.hasErrors())
+      this.setErrors(feeId.getErrors());
+
+    if (charge instanceof FeeChargeValueObject && charge.hasErrors())
+      this.setErrors(charge.getErrors());
+
+    if (tax instanceof FeeTaxValueObject && tax.hasErrors())
+      this.setErrors(tax.getErrors());
 
     if (this.hasErrors() === true)
       throw new ValueObjectException(
-        'Hay algunos errores en el comando ejecutado por UpdateFeeChargeUserCase',
+        'Hay algunos errores en el comando ejecutado por GetFee',
         this.getErrors(),
       );
+  }
 
-    return valueObject;
+  private async executeInvoiceAggregateRoot(
+    feeId: string,
+    newFee: FeeDomainEntityBase
+  ): Promise<FeeDomainEntityBase | null> {
+    return this.invoiceAggregateRoot.updateFeeCharge(feeId, newFee);
   }
 }

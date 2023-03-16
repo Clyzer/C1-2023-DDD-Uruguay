@@ -3,9 +3,7 @@ import {
   ValueObjectErrorHandler,
 } from '../../../../../../libs/sofka';
 import { InvoiceAggregate } from '../../domain/aggregates';
-import {
-  CreatedInvoiceEventPublisherBase,
-} from '../../domain/events/publishers';
+import { CreatedInvoiceEventPublisherBase } from '../../domain/events/publishers';
 import { IDeleteInvoiceCommand } from '../../domain/interfaces/commands';
 import { IDeleteInvoiceResponse } from '../../domain/interfaces/responses';
 import { IInvoiceDomainService } from '../../domain/services';

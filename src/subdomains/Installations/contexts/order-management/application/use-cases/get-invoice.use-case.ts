@@ -10,9 +10,7 @@ import {
   InvoiceDomainEntityBase,
 } from '../../domain/entities/';
 import { IInvoiceDomainEntity } from '../../domain/entities/interfaces';
-import {
-  CreatedInvoiceEventPublisherBase,
-} from '../../domain/events/publishers';
+import { CreatedInvoiceEventPublisherBase } from '../../domain/events/publishers';
 import { IGetInvoiceCommand } from '../../domain/interfaces/commands';
 import { IGetInvoiceResponse } from '../../domain/interfaces/responses';
 import { IInvoiceDomainService } from '../../domain/services';
@@ -58,8 +56,8 @@ export class GetInvoiceUserCase<
   private async executeCommand(
     command: Command,
   ): Promise<InvoiceDomainEntityBase | null> {
-    const invoice = await this.invoiceAggregateRoot.getInvoice(
-      command.invoiceId,
+    const invoice = await this.executeInvoiceAggregateRoot(
+      command.invoiceId.valueOf(),
     );
     this.validateAggregate(invoice);
     return invoice;
@@ -111,5 +109,11 @@ export class GetInvoiceUserCase<
 
     if (tax instanceof FeeTaxValueObject && tax.hasErrors())
       this.setErrors(tax.getErrors());
+  }
+
+  private async executeInvoiceAggregateRoot(
+    invoiceId: string,
+  ): Promise<InvoiceDomainEntityBase | null> {
+    return this.invoiceAggregateRoot.getInvoice(invoiceId);
   }
 }

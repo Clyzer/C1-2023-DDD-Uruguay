@@ -6,9 +6,7 @@ import {
 import { InvoiceAggregate } from '../../domain/aggregates';
 import { InvoiceDomainEntityBase } from '../../domain/entities';
 import { IInvoiceDomainEntity } from '../../domain/entities/interfaces';
-import {
-  CreatedInvoiceEventPublisherBase,
-} from '../../domain/events/publishers';
+import { CreatedInvoiceEventPublisherBase } from '../../domain/events/publishers';
 import { ICreateInvoiceCommand } from '../../domain/interfaces/commands';
 import { ICreateInvoiceResponse } from '../../domain/interfaces/responses';
 import { IInvoiceDomainService } from '../../domain/services';

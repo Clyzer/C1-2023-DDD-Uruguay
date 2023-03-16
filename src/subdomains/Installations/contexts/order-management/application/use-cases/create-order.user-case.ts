@@ -8,9 +8,7 @@ import {
   KitDomainEntityBase,
   OrderDomainEntityBase,
 } from '../../domain/entities';
-import {
-  BenefitedDomainEntityBase,
-} from '../../domain/entities/order/benefited.domain-entity';
+import { BenefitedDomainEntityBase } from '../../domain/entities/order/benefited.domain-entity';
 import { CreatedOrderEventPublisherBase } from '../../domain/events/publishers';
 import { ICreateOrderCommand } from '../../domain/interfaces/commands';
 import { ICreateOrderResponse } from '../../domain/interfaces/responses';

@@ -61,7 +61,9 @@ export class GetOrderUserCase<
   private async executeCommand(
     command: Command,
   ): Promise<OrderDomainEntityBase | null> {
-    const order = await this.orderAggregateRoot.getOrder(command.orderId);
+    const order = await this.executeOrderAggregateRoot(
+      command.orderId.valueOf(),
+    );
     this.validateAggregate(order);
     return order;
   }
@@ -132,5 +134,11 @@ export class GetOrderUserCase<
       companyId.hasErrors()
     )
       this.setErrors(companyId.getErrors());
+  }
+
+  private async executeOrderAggregateRoot(
+    orderId: string,
+  ): Promise<OrderDomainEntityBase | null> {
+    return this.orderAggregateRoot.getOrder(orderId);
   }
 }

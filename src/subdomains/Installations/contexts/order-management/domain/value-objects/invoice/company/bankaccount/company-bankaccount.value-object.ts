@@ -1,9 +1,9 @@
-import { ValueObjectBase } from 'src/libs/';
+import { ValueObjectBase } from '../../../../../../../../../libs/sofka/bases';
 import {
   IsString,
   StringMaxLength,
   StringMinLength,
-} from 'src/libs/validations';
+} from '../../../../../../../../../libs/validations';
 
 export class CompanyBankAccountValueObject extends ValueObjectBase<string> {
   constructor(value?: string) {
@@ -22,19 +22,20 @@ export class CompanyBankAccountValueObject extends ValueObjectBase<string> {
       };
       this.setError(error);
     }
-    if (StringMaxLength(this.value, 15) === false) {
+    if (this.value && StringMinLength(this.value, 5) === false) {
       const error = {
         field: 'CompanyBankAccount',
-        message: 'The bank account of company length is more than 15',
+        message: 'The bank account of company length is less or equal to 5',
       };
       this.setError(error);
     }
-    if (StringMinLength(this.value, 5) === false) {
+    if (this.value && StringMaxLength(this.value, 15) === false) {
       const error = {
         field: 'CompanyBankAccount',
-        message: 'The bank account of company length is less than 8',
+        message: 'The bank account of company length is more or equal to 15',
       };
       this.setError(error);
     }
+
   }
 }

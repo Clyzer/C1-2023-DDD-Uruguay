@@ -1,9 +1,9 @@
-import { ValueObjectBase } from 'src/libs/';
+import { ValueObjectBase } from '../../../../../../../../../libs/sofka/bases';
 import {
   IsString,
   StringMaxLength,
   StringMinLength,
-} from 'src/libs/validations';
+} from '../../../../../../../../../libs/validations';
 
 export class EmployedPhoneValueObject extends ValueObjectBase<string> {
   constructor(value?: string) {
@@ -22,17 +22,17 @@ export class EmployedPhoneValueObject extends ValueObjectBase<string> {
       };
       this.setError(error);
     }
-    if (StringMaxLength(this.value, 15) === false) {
-      const error = {
-        field: 'EmployedPhone',
-        message: 'The phone of employed length is more than 15',
-      };
-      this.setError(error);
-    }
     if (StringMinLength(this.value, 8) === false) {
       const error = {
         field: 'EmployedPhone',
-        message: 'The phone of employed length is less than 8',
+        message: 'The phone of employed length is less or equal to 8',
+      };
+      this.setError(error);
+    }
+    if (StringMaxLength(this.value, 15) === false) {
+      const error = {
+        field: 'EmployedPhone',
+        message: 'The phone of employed length is more or equal to 15',
       };
       this.setError(error);
     }

@@ -1,5 +1,5 @@
-import { ValueObjectBase } from 'src/libs/';
-import { IsBoolean } from 'src/libs/validations';
+import { ValueObjectBase } from '../../../../../../../../libs/sofka/bases';
+import { IsBoolean } from '../../../../../../../../libs/validations';
 
 export class OrderStatusValueObject extends ValueObjectBase<boolean> {
   constructor(value?: boolean) {

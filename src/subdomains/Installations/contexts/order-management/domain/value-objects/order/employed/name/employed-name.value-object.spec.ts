@@ -1,0 +1,34 @@
+import { EmployedNameValueObject } from './';
+
+test("Should return false because don't have errors", () => {
+    // Arrange
+    let valueToTest = '987654321';
+
+    // Act
+    let employed = new EmployedNameValueObject(valueToTest).hasErrors();
+
+    // Assert
+    expect(employed).toBeFalsy();
+})
+
+test("Should return true because length is less or equal to 2", () => {
+    // Arrange
+    let valueToTest = '2';
+
+    // Act
+    let employed = new EmployedNameValueObject(valueToTest).hasErrors();
+
+    // Assert
+    expect(employed).toBeTruthy();
+})
+
+test("Should return true because length is more or equal to 32", () => {
+    // Arrange
+    let valueToTest = '123456789012345678901234567890123';
+
+    // Act
+    let employed = new EmployedNameValueObject(valueToTest).hasErrors();
+
+    // Assert
+    expect(employed).toBeTruthy();
+})

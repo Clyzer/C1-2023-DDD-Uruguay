@@ -1,9 +1,9 @@
-import { ValueObjectBase } from 'src/libs/';
+import { ValueObjectBase } from '../../../../../../../../../libs/sofka/bases';
 import {
   IsString,
   StringMaxLength,
   StringMinLength,
-} from 'src/libs/validations';
+} from '../../../../../../../../../libs/validations';
 
 export class EmployedNameValueObject extends ValueObjectBase<string> {
   constructor(value?: string) {
@@ -22,17 +22,17 @@ export class EmployedNameValueObject extends ValueObjectBase<string> {
       };
       this.setError(error);
     }
-    if (StringMaxLength(this.value, 32) === false) {
+    if (StringMinLength(this.value, 2) === false) {
       const error = {
         field: 'EmployedName',
-        message: 'The name of employed length is more than 32',
+        message: 'The name of employed length is less or equal to 2',
       };
       this.setError(error);
     }
-    if (StringMinLength(this.value, 1) === false) {
+    if (StringMaxLength(this.value, 32) === false) {
       const error = {
         field: 'EmployedName',
-        message: 'The name of employed length is less than 1',
+        message: 'The name of employed length is more or equal to 32',
       };
       this.setError(error);
     }

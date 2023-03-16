@@ -1,9 +1,9 @@
-import { ValueObjectBase } from 'src/libs/';
+import { ValueObjectBase } from '../../../../../../../../../libs/sofka/bases';
 import {
   IsString,
   StringMaxLength,
   StringMinLength,
-} from 'src/libs/validations';
+} from '../../../../../../../../../libs/validations';
 
 export class BenefitedAddressValueObject extends ValueObjectBase<string> {
   constructor(value?: string) {
@@ -22,17 +22,17 @@ export class BenefitedAddressValueObject extends ValueObjectBase<string> {
       };
       this.setError(error);
     }
-    if (StringMaxLength(this.value, 50) === false) {
-      const error = {
-        field: 'BenefitedAddress',
-        message: 'The address of benefited length is more than 15',
-      };
-      this.setError(error);
-    }
     if (StringMinLength(this.value, 6) === false) {
       const error = {
         field: 'BenefitedAddress',
-        message: 'The address of benefited length is less than 8',
+        message: 'The address of benefited length is less or equal to 8',
+      };
+      this.setError(error);
+    }
+    if (StringMaxLength(this.value, 50) === false) {
+      const error = {
+        field: 'BenefitedAddress',
+        message: 'The address of benefited length is more or equal to 15',
       };
       this.setError(error);
     }

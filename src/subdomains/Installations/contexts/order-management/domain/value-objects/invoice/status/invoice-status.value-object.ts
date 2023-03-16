@@ -1,9 +1,9 @@
-import { ValueObjectBase } from 'src/libs/';
-import { IsBoolean } from 'src/libs/validations';
+import { ValueObjectBase } from '../../../../../../../../libs/sofka/bases';
+import { IsBoolean } from '../../../../../../../../libs/validations';
 
 export class InvoiceStatusValueObject extends ValueObjectBase<boolean> {
   constructor(value?: boolean) {
-    super(value ? value : false);
+    super(value ? value : true);
   }
 
   validateData(): void {

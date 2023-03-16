@@ -4,17 +4,11 @@ import {
   ValueObjectException,
 } from '../../../../../../../libs/sofka';
 import { InvoiceAggregate } from '../../../domain/aggregates';
-import { IFeeDomainEntity } from '../../../domain/entities/interfaces/';
+import { IFeeDomainEntity } from '../../../domain/entities/interfaces';
 import { FeeDomainEntityBase } from '../../../domain/entities/invoice';
-import {
-  InvoiceFeeChargeUpdatedEventPublisherBase,
-} from '../../../domain/events/publishers/invoice';
-import {
-  IUpdateFeeChargeCommand,
-} from '../../../domain/interfaces/commands/invoice';
-import {
-  IUpdateFeeChargeResponse,
-} from '../../../domain/interfaces/responses/invoice';
+import { InvoiceFeeChargeUpdatedEventPublisherBase } from '../../../domain/events/publishers/invoice';
+import { IUpdateFeeChargeCommand } from '../../../domain/interfaces/commands/invoice';
+import { IUpdateFeeChargeResponse } from '../../../domain/interfaces/responses/invoice';
 import { IFeeDomainService } from '../../../domain/services/invoice';
 import {
   FeeChargeValueObject,
@@ -54,10 +48,7 @@ export class UpdateFeeChargeUserCase<
     const fee = await this.invoiceAggregateRoot.getFee(command.feeId.valueOf());
     this.validateEntity(fee);
     fee.charge = new FeeChargeValueObject(command.charge.valueOf());
-    return await this.executeInvoiceAggregateRoot(
-      fee.feeId.valueOf(),
-      fee
-    );
+    return await this.executeInvoiceAggregateRoot(fee.feeId.valueOf(), fee);
   }
 
   private validateEntity(fee: IFeeDomainEntity): void {
@@ -81,7 +72,7 @@ export class UpdateFeeChargeUserCase<
 
   private async executeInvoiceAggregateRoot(
     feeId: string,
-    newFee: FeeDomainEntityBase
+    newFee: FeeDomainEntityBase,
   ): Promise<FeeDomainEntityBase | null> {
     return this.invoiceAggregateRoot.updateFeeCharge(feeId, newFee);
   }

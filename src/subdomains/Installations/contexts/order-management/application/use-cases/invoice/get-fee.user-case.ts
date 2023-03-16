@@ -4,11 +4,11 @@ import {
   ValueObjectException,
 } from '../../../../../../../libs/sofka';
 import { InvoiceAggregate } from '../../../domain/aggregates';
-import { IFeeDomainEntity } from '../../../domain/entities/interfaces/';
+import { IFeeDomainEntity } from '../../../domain/entities/interfaces';
 import { FeeDomainEntityBase } from '../../../domain/entities/invoice';
-import { InvoiceFeeCreatedEventPublisherBase } from '../../../domain/events/publishers/invoice';
-import { IGetFeeCommand } from '../../../domain/interfaces/commands';
-import { IGetFeeResponse } from '../../../domain/interfaces/responses';
+import { InvoiceFeeGettedEventPublisherBase } from '../../../domain/events/publishers/invoice';
+import { IGetFeeCommand } from '../../../domain/interfaces/commands/invoice';
+import { IGetFeeResponse } from '../../../domain/interfaces/responses/invoice';
 import { IFeeDomainService } from '../../../domain/services/invoice';
 import {
   FeeChargeValueObject,
@@ -27,12 +27,12 @@ export class GetFeeUserCase<
 
   constructor(
     private readonly feeService: IFeeDomainService,
-    private readonly invoiceFeeCreatedEventPublisherBase: InvoiceFeeCreatedEventPublisherBase,
+    private readonly invoiceFeeGettedEventPublisherBase: InvoiceFeeGettedEventPublisherBase,
   ) {
     super();
     this.invoiceAggregateRoot = new InvoiceAggregate({
       feeService,
-      invoiceFeeCreatedEventPublisherBase,
+      invoiceFeeGettedEventPublisherBase,
     });
   }
 

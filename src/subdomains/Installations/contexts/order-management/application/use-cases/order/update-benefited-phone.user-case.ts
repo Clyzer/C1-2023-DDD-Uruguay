@@ -4,16 +4,12 @@ import {
   ValueObjectException,
 } from '../../../../../../../libs/sofka';
 import { OrderAggregate } from '../../../domain/aggregates';
-import { IBenefitedDomainEntity } from '../../../domain/entities/interfaces/';
+import { IBenefitedDomainEntity } from '../../../domain/entities/interfaces';
 import { BenefitedDomainEntityBase } from '../../../domain/entities/order';
-import { CreatedOrderEventPublisherBase } from '../../../domain/events';
-import {
-  IUpdateBenefitedPhoneCommand,
-} from '../../../domain/interfaces/commands/order';
-import {
-  IUpdateBenefitedPhoneResponse,
-} from '../../../domain/interfaces/responses/order';
-import { IOrderDomainService } from '../../../domain/services';
+import { OrderBenefitedPhoneUpdatedEventPublisherBase } from '../../../domain/events/publishers/order';
+import { IUpdateBenefitedPhoneCommand } from '../../../domain/interfaces/commands/order';
+import { IUpdateBenefitedPhoneResponse } from '../../../domain/interfaces/responses/order';
+import { IBenefitedDomainService } from '../../../domain/services/order';
 import {
   BenefitedAddressValueObject,
   BenefitedCompanyIdValueObject,
@@ -32,13 +28,13 @@ export class UpdateBenefitedPhoneUserCase<
   private readonly orderAggregateRoot: OrderAggregate;
 
   constructor(
-    private readonly orderService: IOrderDomainService,
-    private readonly createdOrderEventPublisherBase: CreatedOrderEventPublisherBase,
+    private readonly benefitedService: IBenefitedDomainService,
+    private readonly orderBenefitedPhoneUpdatedEventPublisherBase: OrderBenefitedPhoneUpdatedEventPublisherBase,
   ) {
     super();
     this.orderAggregateRoot = new OrderAggregate({
-      orderService,
-      createdOrderEventPublisherBase,
+      benefitedService,
+      orderBenefitedPhoneUpdatedEventPublisherBase,
     });
   }
 
@@ -51,12 +47,14 @@ export class UpdateBenefitedPhoneUserCase<
   private async executeCommand(
     command: Command,
   ): Promise<BenefitedDomainEntityBase | null> {
-    const benefited = await this.orderAggregateRoot.getBenefited(command.benefitedId.valueOf());
+    const benefited = await this.orderAggregateRoot.getBenefited(
+      command.benefitedId.valueOf(),
+    );
     this.validateEntity(benefited);
     benefited.phone = new BenefitedPhoneValueObject(command.phone.valueOf());
     return await this.executeOrderAggregateRoot(
       benefited.benefitedId.valueOf(),
-      benefited
+      benefited,
     );
   }
 
@@ -93,8 +91,11 @@ export class UpdateBenefitedPhoneUserCase<
 
   private async executeOrderAggregateRoot(
     benefitedId: string,
-    newBenefited: BenefitedDomainEntityBase
+    newBenefited: BenefitedDomainEntityBase,
   ): Promise<BenefitedDomainEntityBase | null> {
-    return this.orderAggregateRoot.updateBenefitedPhone(benefitedId, newBenefited);
+    return this.orderAggregateRoot.updateBenefitedPhone(
+      benefitedId,
+      newBenefited,
+    );
   }
 }

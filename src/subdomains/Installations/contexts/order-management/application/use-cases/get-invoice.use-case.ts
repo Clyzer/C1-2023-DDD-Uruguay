@@ -10,7 +10,7 @@ import {
   InvoiceDomainEntityBase,
 } from '../../domain/entities/';
 import { IInvoiceDomainEntity } from '../../domain/entities/interfaces';
-import { CreatedInvoiceEventPublisherBase } from '../../domain/events/publishers';
+import { GettedInvoiceEventPublisherBase } from '../../domain/events/publishers';
 import { IGetInvoiceCommand } from '../../domain/interfaces/commands';
 import { IGetInvoiceResponse } from '../../domain/interfaces/responses';
 import { IInvoiceDomainService } from '../../domain/services';
@@ -38,12 +38,12 @@ export class GetInvoiceUserCase<
 
   constructor(
     private readonly invoiceService: IInvoiceDomainService,
-    private readonly createdInvoiceEventPublisherBase: CreatedInvoiceEventPublisherBase,
+    private readonly gettedInvoiceEventPublisherBase: GettedInvoiceEventPublisherBase,
   ) {
     super();
     this.invoiceAggregateRoot = new InvoiceAggregate({
       invoiceService,
-      createdInvoiceEventPublisherBase,
+      gettedInvoiceEventPublisherBase,
     });
   }
 

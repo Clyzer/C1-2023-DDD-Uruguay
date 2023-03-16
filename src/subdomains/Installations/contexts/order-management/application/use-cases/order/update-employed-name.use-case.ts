@@ -4,16 +4,12 @@ import {
   ValueObjectException,
 } from '../../../../../../../libs/sofka';
 import { OrderAggregate } from '../../../domain/aggregates';
-import { IEmployedDomainEntity } from '../../../domain/entities/interfaces/';
+import { IEmployedDomainEntity } from '../../../domain/entities/interfaces';
 import { EmployedDomainEntityBase } from '../../../domain/entities/order';
-import { CreatedOrderEventPublisherBase } from '../../../domain/events';
-import {
-  IUpdateEmployedNameCommand,
-} from '../../../domain/interfaces/commands/order';
-import {
-  IUpdateEmployedNameResponse,
-} from '../../../domain/interfaces/responses/order';
-import { IOrderDomainService } from '../../../domain/services';
+import { OrderEmployedNameUpdatedEventPublisherBase } from '../../../domain/events/publishers/order';
+import { IUpdateEmployedNameCommand } from '../../../domain/interfaces/commands/order';
+import { IUpdateEmployedNameResponse } from '../../../domain/interfaces/responses/order';
+import { IEmployedDomainService } from '../../../domain/services/order';
 import {
   EmployedIdValueObject,
   EmployedNameValueObject,
@@ -30,13 +26,13 @@ export class UpdateEmployedNameUserCase<
   private readonly orderAggregateRoot: OrderAggregate;
 
   constructor(
-    private readonly orderService: IOrderDomainService,
-    private readonly createdOrderEventPublisherBase: CreatedOrderEventPublisherBase,
+    private readonly employedService: IEmployedDomainService,
+    private readonly orderEmployedNameUpdatedEventPublisherBase: OrderEmployedNameUpdatedEventPublisherBase,
   ) {
     super();
     this.orderAggregateRoot = new OrderAggregate({
-      orderService,
-      createdOrderEventPublisherBase,
+      employedService,
+      orderEmployedNameUpdatedEventPublisherBase,
     });
   }
 
@@ -49,12 +45,14 @@ export class UpdateEmployedNameUserCase<
   private async executeCommand(
     command: Command,
   ): Promise<EmployedDomainEntityBase | null> {
-    const employed = await this.orderAggregateRoot.getEmployed(command.employedId.valueOf());
+    const employed = await this.orderAggregateRoot.getEmployed(
+      command.employedId.valueOf(),
+    );
     this.validateEntity(employed);
     employed.name = new EmployedNameValueObject(command.name.valueOf());
     return await this.executeOrderAggregateRoot(
       employed.employedId.valueOf(),
-      employed
+      employed,
     );
   }
 
@@ -79,7 +77,7 @@ export class UpdateEmployedNameUserCase<
 
   private async executeOrderAggregateRoot(
     employedId: string,
-    newEmployed: EmployedDomainEntityBase
+    newEmployed: EmployedDomainEntityBase,
   ): Promise<EmployedDomainEntityBase | null> {
     return this.orderAggregateRoot.updateEmployedName(employedId, newEmployed);
   }

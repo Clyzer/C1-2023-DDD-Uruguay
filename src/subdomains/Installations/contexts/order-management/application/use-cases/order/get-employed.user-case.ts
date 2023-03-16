@@ -4,12 +4,12 @@ import {
   ValueObjectException,
 } from '../../../../../../../libs/sofka';
 import { OrderAggregate } from '../../../domain/aggregates';
-import { IEmployedDomainEntity } from '../../../domain/entities/interfaces/';
+import { IEmployedDomainEntity } from '../../../domain/entities/interfaces';
 import { EmployedDomainEntityBase } from '../../../domain/entities/order';
-import { CreatedOrderEventPublisherBase } from '../../../domain/events';
-import { IGetEmployedCommand } from '../../../domain/interfaces/commands';
-import { IGetEmployedResponse } from '../../../domain/interfaces/responses';
-import { IOrderDomainService } from '../../../domain/services';
+import { OrderEmployedGettedEventPublisherBase } from '../../../domain/events/publishers/order';
+import { IGetEmployedCommand } from '../../../domain/interfaces/commands/order';
+import { IGetEmployedResponse } from '../../../domain/interfaces/responses/order';
+import { IEmployedDomainService } from '../../../domain/services/order';
 import {
   EmployedIdValueObject,
   EmployedNameValueObject,
@@ -26,13 +26,13 @@ export class GetEmployedUserCase<
   private readonly orderAggregateRoot: OrderAggregate;
 
   constructor(
-    private readonly orderService: IOrderDomainService,
-    private readonly createdOrderEventPublisherBase: CreatedOrderEventPublisherBase,
+    private readonly employedService: IEmployedDomainService,
+    private readonly orderEmployedGettedEventPublisherBase: OrderEmployedGettedEventPublisherBase,
   ) {
     super();
     this.orderAggregateRoot = new OrderAggregate({
-      orderService,
-      createdOrderEventPublisherBase,
+      employedService,
+      orderEmployedGettedEventPublisherBase,
     });
   }
 

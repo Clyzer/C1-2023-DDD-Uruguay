@@ -3,6 +3,7 @@ import { ApiTags } from '@nestjs/swagger';
 
 import {
   CreateInvoiceUseCase,
+  DeleteInvoiceUserCase,
   GetInvoiceUserCase,
 } from '../../application/use-cases';
 import {
@@ -11,22 +12,23 @@ import {
   GettedInvoicePublisher,
 } from '../messaging/publisher';
 import { InvoiceService } from '../persistence/services';
-import { CompanyService, FeeService } from '../persistence/services/invoice';
-import { CreateInvoiceCommand, GetInvoiceCommand } from '../utils/commands';
+import {
+  CreateInvoiceCommand,
+  DeleteInvoiceCommand,
+  GetInvoiceCommand,
+} from '../utils/commands';
 
 @ApiTags('invoice')
 @Controller('api/invoice')
 export class InvoiceController {
   constructor(
     private readonly invoiceService: InvoiceService,
-    private readonly companyService: CompanyService,
-    private readonly feeService: FeeService,
     private readonly createdInvoiceEventPublisher: CreatedInvoicePublisher,
     private readonly gettedInvoiceEventPublisher: GettedInvoicePublisher,
-    private readonly deletedInvioceEventPublisher: DeletedInvoicePublisher,
+    private readonly deletedInvoiceEventPublisher: DeletedInvoicePublisher,
   ) {}
 
-  @Post('/create-invoice')
+  @Post('/create')
   async createInvoice(@Body() command: CreateInvoiceCommand) {
     const useCase = new CreateInvoiceUseCase(
       this.invoiceService,
@@ -35,7 +37,7 @@ export class InvoiceController {
     return await useCase.execute(command);
   }
 
-  @Post('/get-invoice')
+  @Post('/get')
   async getInvoice(@Body() command: GetInvoiceCommand) {
     const useCase = new GetInvoiceUserCase(
       this.invoiceService,
@@ -43,12 +45,13 @@ export class InvoiceController {
     );
     return await useCase.execute(command);
   }
-  //@Post('/delete-invoice')
-  //async deleteInvoice(@Body() command: DeleteInvoiceCommand) {
-  //    const useCase = new DeleteInvoiceUserCase(
-  //        this.invoiceService,
-  //        this.deletedInvoiceEventPublisher,
-  //    );
-  //    return await useCase.execute(command);
-  //}
+
+  @Post('/delete')
+  async deleteInvoice(@Body() command: DeleteInvoiceCommand) {
+    const useCase = new DeleteInvoiceUserCase(
+      this.invoiceService,
+      this.deletedInvoiceEventPublisher,
+    );
+    return await useCase.execute(command);
+  }
 }

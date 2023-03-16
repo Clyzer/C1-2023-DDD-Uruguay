@@ -3,7 +3,7 @@ import {
   ValueObjectErrorHandler,
 } from '../../../../../../libs/sofka';
 import { InvoiceAggregate } from '../../domain/aggregates';
-import { CreatedInvoiceEventPublisherBase } from '../../domain/events/publishers';
+import { DeletedInvoiceEventPublisherBase } from '../../domain/events/publishers';
 import { IDeleteInvoiceCommand } from '../../domain/interfaces/commands';
 import { IDeleteInvoiceResponse } from '../../domain/interfaces/responses';
 import { IInvoiceDomainService } from '../../domain/services';
@@ -19,12 +19,12 @@ export class DeleteInvoiceUserCase<
 
   constructor(
     private readonly invoiceService: IInvoiceDomainService,
-    private readonly createdInvoiceEventPublisherBase: CreatedInvoiceEventPublisherBase,
+    private readonly deletedInvoiceEventPublisherBase: DeletedInvoiceEventPublisherBase,
   ) {
     super();
     this.invoiceAggregateRoot = new InvoiceAggregate({
       invoiceService,
-      createdInvoiceEventPublisherBase,
+      deletedInvoiceEventPublisherBase,
     });
   }
 

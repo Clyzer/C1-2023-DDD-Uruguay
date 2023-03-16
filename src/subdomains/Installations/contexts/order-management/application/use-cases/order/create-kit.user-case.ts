@@ -4,13 +4,13 @@ import {
   ValueObjectException,
 } from '../../../../../../../libs/sofka';
 import { OrderAggregate } from '../../../domain/aggregates';
-import { KitDomainEntityBase } from '../../../domain/entities';
 import { IKitDomainEntity } from '../../../domain/entities/interfaces';
+import { KitDomainEntityBase } from '../../../domain/entities/order';
 import { OrderKitCreatedEventPublisherBase } from '../../../domain/events/publishers/order';
 import { ICreateKitCommand } from '../../../domain/interfaces/commands/order';
 import { ICreateKitResponse } from '../../../domain/interfaces/responses/order';
 import { IKitDomainService } from '../../../domain/services/order';
-import { KitModelValueObject } from '../../../domain/value-objects';
+import { KitModelValueObject } from '../../../domain/value-objects/order';
 
 export class CreateKitUseCase<
     Command extends ICreateKitCommand = ICreateKitCommand,

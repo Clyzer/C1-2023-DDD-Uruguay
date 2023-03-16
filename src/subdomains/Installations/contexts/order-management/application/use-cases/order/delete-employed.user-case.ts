@@ -3,10 +3,10 @@ import {
   ValueObjectErrorHandler,
 } from '../../../../../../../libs/sofka';
 import { OrderAggregate } from '../../../domain/aggregates';
-import { CreatedOrderEventPublisherBase } from '../../../domain/events';
-import { IDeleteEmployedCommand } from '../../../domain/interfaces/commands';
-import { IDeleteEmployedResponse } from '../../../domain/interfaces/responses';
-import { IOrderDomainService } from '../../../domain/services';
+import { OrderEmployedDeletedEventPublisherBase } from '../../../domain/events/publishers/order';
+import { IDeleteEmployedCommand } from '../../../domain/interfaces/commands/order';
+import { IDeleteEmployedResponse } from '../../../domain/interfaces/responses/order';
+import { IEmployedDomainService } from '../../../domain/services/order';
 
 export class DeleteEmployedUserCase<
     Command extends IDeleteEmployedCommand = IDeleteEmployedCommand,
@@ -18,13 +18,13 @@ export class DeleteEmployedUserCase<
   private readonly orderAggregateRoot: OrderAggregate;
 
   constructor(
-    private readonly orderService: IOrderDomainService,
-    private readonly createdOrderEventPublisherBase: CreatedOrderEventPublisherBase,
+    private readonly employedService: IEmployedDomainService,
+    private readonly orderEmployedDeletedEventPublisherBase: OrderEmployedDeletedEventPublisherBase,
   ) {
     super();
     this.orderAggregateRoot = new OrderAggregate({
-      orderService,
-      createdOrderEventPublisherBase,
+      employedService,
+      orderEmployedDeletedEventPublisherBase,
     });
   }
 

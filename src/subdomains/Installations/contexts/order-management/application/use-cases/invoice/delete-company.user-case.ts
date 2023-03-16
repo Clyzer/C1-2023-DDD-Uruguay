@@ -4,8 +4,8 @@ import {
 } from '../../../../../../../libs/sofka';
 import { InvoiceAggregate } from '../../../domain/aggregates';
 import { InvoiceCompanyDeletedEventPublisherBase } from '../../../domain/events/publishers/invoice';
-import { IDeleteCompanyCommand } from '../../../domain/interfaces/commands';
-import { IDeleteCompanyResponse } from '../../../domain/interfaces/responses';
+import { IDeleteCompanyCommand } from '../../../domain/interfaces/commands/invoice';
+import { IDeleteCompanyResponse } from '../../../domain/interfaces/responses/invoice';
 import { ICompanyDomainService } from '../../../domain/services/invoice';
 
 export class DeleteCompanyUserCase<

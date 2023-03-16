@@ -3,10 +3,10 @@ import {
   ValueObjectErrorHandler,
 } from '../../../../../../../libs/sofka';
 import { OrderAggregate } from '../../../domain/aggregates';
-import { CreatedOrderEventPublisherBase } from '../../../domain/events';
-import { IDeleteKitCommand } from '../../../domain/interfaces/commands';
-import { IDeleteKitResponse } from '../../../domain/interfaces/responses';
-import { IOrderDomainService } from '../../../domain/services';
+import { OrderKitDeletedEventPublisherBase } from '../../../domain/events/publishers/order';
+import { IDeleteKitCommand } from '../../../domain/interfaces/commands/order';
+import { IDeleteKitResponse } from '../../../domain/interfaces/responses/order';
+import { IKitDomainService } from '../../../domain/services/order';
 
 export class DeleteKitUserCase<
     Command extends IDeleteKitCommand = IDeleteKitCommand,
@@ -18,13 +18,13 @@ export class DeleteKitUserCase<
   private readonly orderAggregateRoot: OrderAggregate;
 
   constructor(
-    private readonly orderService: IOrderDomainService,
-    private readonly createdOrderEventPublisherBase: CreatedOrderEventPublisherBase,
+    private readonly kitService: IKitDomainService,
+    private readonly orderKitDeletedEventPublisherBase: OrderKitDeletedEventPublisherBase,
   ) {
     super();
     this.orderAggregateRoot = new OrderAggregate({
-      orderService,
-      createdOrderEventPublisherBase,
+      kitService,
+      orderKitDeletedEventPublisherBase,
     });
   }
 

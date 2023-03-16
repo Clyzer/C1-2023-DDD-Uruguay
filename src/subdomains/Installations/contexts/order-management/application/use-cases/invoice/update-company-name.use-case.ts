@@ -4,15 +4,11 @@ import {
   ValueObjectException,
 } from '../../../../../../../libs/sofka';
 import { InvoiceAggregate } from '../../../domain/aggregates';
-import { ICompanyDomainEntity } from '../../../domain/entities/interfaces/';
+import { ICompanyDomainEntity } from '../../../domain/entities/interfaces';
 import { CompanyDomainEntityBase } from '../../../domain/entities/invoice';
-import {
-  InvoiceCompanyBankAccountUpdatedEventPublisherBase,
-} from '../../../domain/events/publishers/invoice';
-import { IUpdateCompanyNameCommand } from '../../../domain/interfaces/commands';
-import {
-  IUpdateCompanyNameResponse,
-} from '../../../domain/interfaces/responses';
+import { InvoiceCompanyNameUpdatedEventPublisherBase } from '../../../domain/events/publishers/invoice';
+import { IUpdateCompanyNameCommand } from '../../../domain/interfaces/commands/invoice';
+import { IUpdateCompanyNameResponse } from '../../../domain/interfaces/responses/invoice';
 import { ICompanyDomainService } from '../../../domain/services/invoice';
 import {
   CompanyBankAccountValueObject,
@@ -31,12 +27,12 @@ export class UpdateCompanyNameUserCase<
 
   constructor(
     private readonly companyService: ICompanyDomainService,
-    private readonly invoiceCompanyBankAccountUpdatedEventPublisherBase: InvoiceCompanyBankAccountUpdatedEventPublisherBase,
+    private readonly invoiceCompanyNameUpdatedEventPublisherBase: InvoiceCompanyNameUpdatedEventPublisherBase,
   ) {
     super();
     this.invoiceAggregateRoot = new InvoiceAggregate({
       companyService,
-      invoiceCompanyBankAccountUpdatedEventPublisherBase,
+      invoiceCompanyNameUpdatedEventPublisherBase,
     });
   }
 
@@ -49,12 +45,14 @@ export class UpdateCompanyNameUserCase<
   private async executeCommand(
     command: Command,
   ): Promise<CompanyDomainEntityBase | null> {
-    const company = await this.invoiceAggregateRoot.getCompany(command.companyId.valueOf());
+    const company = await this.invoiceAggregateRoot.getCompany(
+      command.companyId.valueOf(),
+    );
     this.validateEntity(company);
     company.name = new CompanyNameValueObject(command.name.valueOf());
     return await this.executeInvoiceAggregateRoot(
       company.companyId.valueOf(),
-      company
+      company,
     );
   }
 
@@ -82,7 +80,7 @@ export class UpdateCompanyNameUserCase<
 
   private async executeInvoiceAggregateRoot(
     companyId: string,
-    newCompany: CompanyDomainEntityBase
+    newCompany: CompanyDomainEntityBase,
   ): Promise<CompanyDomainEntityBase | null> {
     return this.invoiceAggregateRoot.updateCompanyName(companyId, newCompany);
   }

@@ -4,8 +4,8 @@ import {
 } from '../../../../../../../libs/sofka';
 import { InvoiceAggregate } from '../../../domain/aggregates';
 import { InvoiceFeeDeletedEventPublisherBase } from '../../../domain/events/publishers/invoice';
-import { IDeleteFeeCommand } from '../../../domain/interfaces/commands';
-import { IDeleteFeeResponse } from '../../../domain/interfaces/responses';
+import { IDeleteFeeCommand } from '../../../domain/interfaces/commands/invoice';
+import { IDeleteFeeResponse } from '../../../domain/interfaces/responses/invoice';
 import { IFeeDomainService } from '../../../domain/services/invoice';
 
 export class DeleteFeeUserCase<

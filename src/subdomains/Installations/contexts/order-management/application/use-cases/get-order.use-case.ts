@@ -11,7 +11,7 @@ import {
   OrderDomainEntityBase,
 } from '../../domain/entities';
 import { IOrderDomainEntity } from '../../domain/entities/interfaces';
-import { CreatedOrderEventPublisherBase } from '../../domain/events/publishers';
+import { GettedOrderEventPublisherBase } from '../../domain/events/publishers';
 import { IGetOrderCommand } from '../../domain/interfaces/commands';
 import { IGetOrderResponse } from '../../domain/interfaces/responses';
 import { IOrderDomainService } from '../../domain/services';
@@ -43,12 +43,12 @@ export class GetOrderUserCase<
 
   constructor(
     private readonly orderService: IOrderDomainService,
-    private readonly createdOrderEventPublisherBase: CreatedOrderEventPublisherBase,
+    private readonly gettedOrderEventPublisherBase: GettedOrderEventPublisherBase,
   ) {
     super();
     this.orderAggregateRoot = new OrderAggregate({
       orderService,
-      createdOrderEventPublisherBase,
+      gettedOrderEventPublisherBase,
     });
   }
 

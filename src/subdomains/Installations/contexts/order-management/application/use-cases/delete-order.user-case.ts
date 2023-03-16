@@ -3,7 +3,7 @@ import {
   ValueObjectErrorHandler,
 } from '../../../../../../libs/sofka';
 import { OrderAggregate } from '../../domain/aggregates';
-import { CreatedOrderEventPublisherBase } from '../../domain/events/publishers';
+import { DeletedOrderEventPublisherBase } from '../../domain/events/publishers';
 import { IDeleteOrderCommand } from '../../domain/interfaces/commands';
 import { IDeleteOrderResponse } from '../../domain/interfaces/responses';
 import { IOrderDomainService } from '../../domain/services';
@@ -19,12 +19,12 @@ export class DeleteOrderUserCase<
 
   constructor(
     private readonly orderService: IOrderDomainService,
-    private readonly createdOrderEventPublisherBase: CreatedOrderEventPublisherBase,
+    private readonly deletedOrderEventPublisherBase: DeletedOrderEventPublisherBase,
   ) {
     super();
     this.orderAggregateRoot = new OrderAggregate({
       orderService,
-      createdOrderEventPublisherBase,
+      deletedOrderEventPublisherBase,
     });
   }
 

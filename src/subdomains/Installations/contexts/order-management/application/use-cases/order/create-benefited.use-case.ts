@@ -4,18 +4,18 @@ import {
   ValueObjectException,
 } from '../../../../../../../libs/sofka';
 import { OrderAggregate } from '../../../domain/aggregates';
-import { BenefitedDomainEntityBase } from '../../../domain/entities';
 import { IBenefitedDomainEntity } from '../../../domain/entities/interfaces';
-import { CreatedOrderEventPublisherBase } from '../../../domain/events';
+import { BenefitedDomainEntityBase } from '../../../domain/entities/order';
+import { OrderBenefitedCreatedEventPublisherBase } from '../../../domain/events/publishers/order';
 import { ICreateBenefitedCommand } from '../../../domain/interfaces/commands/order';
 import { ICreateBenefitedResponse } from '../../../domain/interfaces/responses/order';
-import { IOrderDomainService } from '../../../domain/services';
+import { IBenefitedDomainService } from '../../../domain/services/order';
 import {
   BenefitedAddressValueObject,
   BenefitedCompanyIdValueObject,
   BenefitedNameValueObject,
   BenefitedPhoneValueObject,
-} from '../../../domain/value-objects';
+} from '../../../domain/value-objects/order';
 
 export class CreateBenefitedUseCase<
     Command extends ICreateBenefitedCommand = ICreateBenefitedCommand,
@@ -27,13 +27,13 @@ export class CreateBenefitedUseCase<
   private readonly orderAggregateRoot: OrderAggregate;
 
   constructor(
-    private readonly orderService: IOrderDomainService,
-    private readonly createdOrderEventPublisherBase: CreatedOrderEventPublisherBase,
+    private readonly benefitedService: IBenefitedDomainService,
+    private readonly orderBenefitedCreatedEventPublisherBase: OrderBenefitedCreatedEventPublisherBase,
   ) {
     super();
     this.orderAggregateRoot = new OrderAggregate({
-      orderService,
-      createdOrderEventPublisherBase,
+      benefitedService,
+      orderBenefitedCreatedEventPublisherBase,
     });
   }
 

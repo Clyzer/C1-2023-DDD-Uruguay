@@ -3,10 +3,10 @@ import {
   ValueObjectErrorHandler,
 } from '../../../../../../../libs/sofka';
 import { OrderAggregate } from '../../../domain/aggregates';
-import { CreatedOrderEventPublisherBase } from '../../../domain/events';
-import { IDeleteBenefitedCommand } from '../../../domain/interfaces/commands';
-import { IDeleteBenefitedResponse } from '../../../domain/interfaces/responses';
-import { IOrderDomainService } from '../../../domain/services';
+import { OrderBenefitedDeletedEventPublisherBase } from '../../../domain/events/publishers/order';
+import { IDeleteBenefitedCommand } from '../../../domain/interfaces/commands/order';
+import { IDeleteBenefitedResponse } from '../../../domain/interfaces/responses/order';
+import { IBenefitedDomainService } from '../../../domain/services/order';
 
 export class DeleteBenefitedUserCase<
     Command extends IDeleteBenefitedCommand = IDeleteBenefitedCommand,
@@ -18,13 +18,13 @@ export class DeleteBenefitedUserCase<
   private readonly orderAggregateRoot: OrderAggregate;
 
   constructor(
-    private readonly orderService: IOrderDomainService,
-    private readonly createdOrderEventPublisherBase: CreatedOrderEventPublisherBase,
+    private readonly benefitedService: IBenefitedDomainService,
+    private readonly orderBenefitedDeletedEventPublisherBase: OrderBenefitedDeletedEventPublisherBase,
   ) {
     super();
     this.orderAggregateRoot = new OrderAggregate({
-      orderService,
-      createdOrderEventPublisherBase,
+      benefitedService,
+      orderBenefitedDeletedEventPublisherBase,
     });
   }
 

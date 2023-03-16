@@ -4,11 +4,11 @@ import {
   ValueObjectException,
 } from '../../../../../../../libs/sofka';
 import { InvoiceAggregate } from '../../../domain/aggregates';
-import { ICompanyDomainEntity } from '../../../domain/entities/interfaces/';
+import { ICompanyDomainEntity } from '../../../domain/entities/interfaces';
 import { CompanyDomainEntityBase } from '../../../domain/entities/invoice';
-import { InvoiceCompanyCreatedEventPublisherBase } from '../../../domain/events/publishers/invoice';
-import { IGetCompanyCommand } from '../../../domain/interfaces/commands';
-import { IGetCompanyResponse } from '../../../domain/interfaces/responses';
+import { InvoiceCompanyGettedEventPublisherBase } from '../../../domain/events/publishers/invoice';
+import { IGetCompanyCommand } from '../../../domain/interfaces/commands/invoice';
+import { IGetCompanyResponse } from '../../../domain/interfaces/responses/invoice';
 import { ICompanyDomainService } from '../../../domain/services/invoice';
 import {
   CompanyBankAccountValueObject,
@@ -27,12 +27,12 @@ export class GetCompanyUserCase<
 
   constructor(
     private readonly companyService: ICompanyDomainService,
-    private readonly invoiceCompanyCreatedEventPublisherBase: InvoiceCompanyCreatedEventPublisherBase,
+    private readonly invoiceCompanyGettedEventPublisherBase: InvoiceCompanyGettedEventPublisherBase,
   ) {
     super();
     this.invoiceAggregateRoot = new InvoiceAggregate({
       companyService,
-      invoiceCompanyCreatedEventPublisherBase,
+      invoiceCompanyGettedEventPublisherBase,
     });
   }
 

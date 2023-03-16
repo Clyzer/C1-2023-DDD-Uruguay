@@ -1,3 +1,5 @@
+export * from './change-invoice-status.use-case';
+
 export * from './create-company.use-case';
 
 export * from './create-fee.use-case';

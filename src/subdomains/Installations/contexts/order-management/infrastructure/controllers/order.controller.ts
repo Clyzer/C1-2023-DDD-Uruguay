@@ -3,6 +3,7 @@ import { ApiTags } from '@nestjs/swagger';
 
 import {
   CreateOrderUseCase,
+  DeleteOrderUserCase,
   GetOrderUserCase,
 } from '../../application/use-cases';
 import {
@@ -11,7 +12,11 @@ import {
   GettedOrderPublisher,
 } from '../messaging/publisher';
 import { OrderService } from '../persistence/services';
-import { CreateOrderCommand, GetOrderCommand } from '../utils/commands';
+import {
+  CreateOrderCommand,
+  DeleteOrderCommand,
+  GetOrderCommand,
+} from '../utils/commands';
 
 @ApiTags('order')
 @Controller('api/order')
@@ -23,7 +28,7 @@ export class OrderController {
     private readonly deletedOrderEventPublisher: DeletedOrderPublisher,
   ) {}
 
-  @Post('/create-order')
+  @Post('/create')
   async createOrder(@Body() command: CreateOrderCommand) {
     const useCase = new CreateOrderUseCase(
       this.orderService,
@@ -32,7 +37,7 @@ export class OrderController {
     return await useCase.execute(command);
   }
 
-  @Post('/get-order')
+  @Post('/get')
   async getOrder(@Body() command: GetOrderCommand) {
     const useCase = new GetOrderUserCase(
       this.orderService,
@@ -41,12 +46,12 @@ export class OrderController {
     return await useCase.execute(command);
   }
 
-  //@Post('/delete-order')
-  //async deleteOrder(@Body() command: DeleteOrderCommand) {
-  //    const useCase = new DeleteOrderUserCase(
-  //        this.orderService,
-  //        this.deletedOrderEventPublisher,
-  //    );
-  //    return await useCase.execute(command);
-  //}
+  @Post('/delete')
+  async deleteOrder(@Body() command: DeleteOrderCommand) {
+    const useCase = new DeleteOrderUserCase(
+      this.orderService,
+      this.deletedOrderEventPublisher,
+    );
+    return await useCase.execute(command);
+  }
 }

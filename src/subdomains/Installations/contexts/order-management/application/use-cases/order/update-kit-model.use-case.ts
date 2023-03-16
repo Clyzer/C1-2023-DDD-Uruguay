@@ -4,16 +4,12 @@ import {
   ValueObjectException,
 } from '../../../../../../../libs/sofka';
 import { OrderAggregate } from '../../../domain/aggregates';
-import { IKitDomainEntity } from '../../../domain/entities/interfaces/';
+import { IKitDomainEntity } from '../../../domain/entities/interfaces';
 import { KitDomainEntityBase } from '../../../domain/entities/order';
-import { CreatedOrderEventPublisherBase } from '../../../domain/events';
-import {
-  IUpdateKitModelCommand,
-} from '../../../domain/interfaces/commands/order';
-import {
-  IUpdateKitModelResponse,
-} from '../../../domain/interfaces/responses/order';
-import { IOrderDomainService } from '../../../domain/services';
+import { OrderKitCreatedEventPublisherBase } from '../../../domain/events/publishers/order';
+import { IUpdateKitModelCommand } from '../../../domain/interfaces/commands/order';
+import { IUpdateKitModelResponse } from '../../../domain/interfaces/responses/order';
+import { IKitDomainService } from '../../../domain/services/order';
 import {
   KitIdValueObject,
   KitModelValueObject,
@@ -29,13 +25,13 @@ export class UpdateKitModelUserCase<
   private readonly orderAggregateRoot: OrderAggregate;
 
   constructor(
-    private readonly orderService: IOrderDomainService,
-    private readonly createdOrderEventPublisherBase: CreatedOrderEventPublisherBase,
+    private readonly kitService: IKitDomainService,
+    private readonly orderKitCreatedEventPublisherBase: OrderKitCreatedEventPublisherBase,
   ) {
     super();
     this.orderAggregateRoot = new OrderAggregate({
-      orderService,
-      createdOrderEventPublisherBase,
+      kitService,
+      orderKitCreatedEventPublisherBase,
     });
   }
 
@@ -51,10 +47,7 @@ export class UpdateKitModelUserCase<
     const kit = await this.orderAggregateRoot.getKit(command.kitId.valueOf());
     this.validateEntity(kit);
     kit.model = new KitModelValueObject(command.model.valueOf());
-    return await this.executeOrderAggregateRoot(
-      kit.kitId.valueOf(),
-      kit
-    );
+    return await this.executeOrderAggregateRoot(kit.kitId.valueOf(), kit);
   }
 
   private validateEntity(kit: IKitDomainEntity): void {
@@ -74,7 +67,7 @@ export class UpdateKitModelUserCase<
 
   private async executeOrderAggregateRoot(
     kitId: string,
-    newKit: KitDomainEntityBase
+    newKit: KitDomainEntityBase,
   ): Promise<KitDomainEntityBase | null> {
     return this.orderAggregateRoot.updateKitModel(kitId, newKit);
   }

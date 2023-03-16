@@ -4,17 +4,11 @@ import {
   ValueObjectException,
 } from '../../../../../../../libs/sofka';
 import { InvoiceAggregate } from '../../../domain/aggregates';
-import { IFeeDomainEntity } from '../../../domain/entities/interfaces/';
+import { IFeeDomainEntity } from '../../../domain/entities/interfaces';
 import { FeeDomainEntityBase } from '../../../domain/entities/invoice';
-import {
-  InvoiceFeeChargeUpdatedEventPublisherBase,
-} from '../../../domain/events/publishers/invoice';
-import {
-  IUpdateFeeTaxCommand,
-} from '../../../domain/interfaces/commands/invoice';
-import {
-  IUpdateFeeTaxResponse,
-} from '../../../domain/interfaces/responses/invoice';
+import { InvoiceFeeTaxUpdatedEventPublisherBase } from '../../../domain/events/publishers/invoice';
+import { IUpdateFeeTaxCommand } from '../../../domain/interfaces/commands/invoice';
+import { IUpdateFeeTaxResponse } from '../../../domain/interfaces/responses/invoice';
 import { IFeeDomainService } from '../../../domain/services/invoice';
 import {
   FeeChargeValueObject,
@@ -33,12 +27,12 @@ export class UpdateFeeTaxUserCase<
 
   constructor(
     private readonly feeService: IFeeDomainService,
-    private readonly invoiceFeeChargeUpdatedEventPublisherBase: InvoiceFeeChargeUpdatedEventPublisherBase,
+    private readonly invoiceFeeTaxUpdatedEventPublisherBase: InvoiceFeeTaxUpdatedEventPublisherBase,
   ) {
     super();
     this.invoiceAggregateRoot = new InvoiceAggregate({
       feeService,
-      invoiceFeeChargeUpdatedEventPublisherBase,
+      invoiceFeeTaxUpdatedEventPublisherBase,
     });
   }
 
@@ -54,10 +48,7 @@ export class UpdateFeeTaxUserCase<
     const fee = await this.invoiceAggregateRoot.getFee(command.feeId.valueOf());
     this.validateEntity(fee);
     fee.tax = new FeeTaxValueObject(command.tax.valueOf());
-    return await this.executeInvoiceAggregateRoot(
-      fee.feeId.valueOf(),
-      fee
-    );
+    return await this.executeInvoiceAggregateRoot(fee.feeId.valueOf(), fee);
   }
 
   private validateEntity(fee: IFeeDomainEntity): void {
@@ -81,7 +72,7 @@ export class UpdateFeeTaxUserCase<
 
   private async executeInvoiceAggregateRoot(
     feeId: string,
-    newFee: FeeDomainEntityBase
+    newFee: FeeDomainEntityBase,
   ): Promise<FeeDomainEntityBase | null> {
     return this.invoiceAggregateRoot.updateFeeTax(feeId, newFee);
   }

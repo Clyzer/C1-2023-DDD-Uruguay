@@ -4,12 +4,12 @@ import {
   ValueObjectException,
 } from '../../../../../../../libs/sofka';
 import { OrderAggregate } from '../../../domain/aggregates';
-import { IKitDomainEntity } from '../../../domain/entities/interfaces/';
+import { IKitDomainEntity } from '../../../domain/entities/interfaces';
 import { KitDomainEntityBase } from '../../../domain/entities/order';
-import { CreatedOrderEventPublisherBase } from '../../../domain/events';
-import { IGetKitCommand } from '../../../domain/interfaces/commands';
-import { IGetKitResponse } from '../../../domain/interfaces/responses';
-import { IOrderDomainService } from '../../../domain/services';
+import { OrderKitGettedEventPublisherBase } from '../../../domain/events/publishers/order';
+import { IGetKitCommand } from '../../../domain/interfaces/commands/order';
+import { IGetKitResponse } from '../../../domain/interfaces/responses/order';
+import { IKitDomainService } from '../../../domain/services/order';
 import {
   KitIdValueObject,
   KitModelValueObject,
@@ -25,13 +25,13 @@ export class GetKitUserCase<
   private readonly orderAggregateRoot: OrderAggregate;
 
   constructor(
-    private readonly orderService: IOrderDomainService,
-    private readonly createdOrderEventPublisherBase: CreatedOrderEventPublisherBase,
+    private readonly kitService: IKitDomainService,
+    private readonly orderKitGettedEventPublisherBase: OrderKitGettedEventPublisherBase,
   ) {
     super();
     this.orderAggregateRoot = new OrderAggregate({
-      orderService,
-      createdOrderEventPublisherBase,
+      kitService,
+      orderKitGettedEventPublisherBase,
     });
   }
 

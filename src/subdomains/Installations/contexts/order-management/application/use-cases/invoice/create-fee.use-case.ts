@@ -4,8 +4,8 @@ import {
   ValueObjectException,
 } from '../../../../../../../libs/sofka';
 import { InvoiceAggregate } from '../../../domain/aggregates';
-import { FeeDomainEntityBase } from '../../../domain/entities';
 import { IFeeDomainEntity } from '../../../domain/entities/interfaces';
+import { FeeDomainEntityBase } from '../../../domain/entities/invoice';
 import { InvoiceFeeCreatedEventPublisherBase } from '../../../domain/events/publishers/invoice';
 import { ICreateFeeCommand } from '../../../domain/interfaces/commands/invoice';
 import { ICreateFeeResponse } from '../../../domain/interfaces/responses/invoice';
@@ -13,7 +13,7 @@ import { IFeeDomainService } from '../../../domain/services/invoice';
 import {
   FeeChargeValueObject,
   FeeTaxValueObject,
-} from '../../../domain/value-objects';
+} from '../../../domain/value-objects/invoice';
 
 export class CreateFeeUseCase<
     Command extends ICreateFeeCommand = ICreateFeeCommand,

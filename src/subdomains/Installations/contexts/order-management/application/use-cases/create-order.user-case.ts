@@ -1,18 +1,28 @@
+import { BadRequestException } from '@nestjs/common';
+
 import {
   IUseCase,
   ValueObjectErrorHandler,
 } from '../../../../../../libs/sofka';
 import { OrderAggregate } from '../../domain/aggregates';
+import { OrderDomainEntityBase } from '../../domain/entities';
 import {
-  EmployedDomainEntityBase,
-  KitDomainEntityBase,
-  OrderDomainEntityBase,
-} from '../../domain/entities';
-import { BenefitedDomainEntityBase } from '../../domain/entities/order/benefited.domain-entity';
-import { CreatedOrderEventPublisherBase } from '../../domain/events/publishers';
+  CreatedOrderEventPublisherBase,
+  OrderBenefitedCreatedEventPublisherBase,
+  OrderBenefitedGettedEventPublisherBase,
+  OrderEmployedCreatedEventPublisherBase,
+  OrderEmployedGettedEventPublisherBase,
+  OrderKitCreatedEventPublisherBase,
+  OrderKitGettedEventPublisherBase,
+} from '../../domain/events/publishers';
 import { ICreateOrderCommand } from '../../domain/interfaces/commands';
 import { ICreateOrderResponse } from '../../domain/interfaces/responses';
-import { IOrderDomainService } from '../../domain/services';
+import {
+  IBenefitedDomainService,
+  IEmployedDomainService,
+  IKitDomainService,
+  IOrderDomainService,
+} from '../../domain/services';
 
 export class CreateOrderUseCase<
     Command extends ICreateOrderCommand = ICreateOrderCommand,
@@ -26,11 +36,26 @@ export class CreateOrderUseCase<
   constructor(
     private readonly orderService: IOrderDomainService,
     private readonly createdOrderEventPublisherBase: CreatedOrderEventPublisherBase,
+    private readonly kitService: IKitDomainService,
+    private readonly orderKitCreatedEventPublisherBase: OrderKitCreatedEventPublisherBase,
+    private readonly orderKitGettedEventPublisherBase: OrderKitGettedEventPublisherBase,
+    private readonly employedService: IEmployedDomainService,
+    private readonly orderEmployedCreatedEventPublisherBase: OrderEmployedCreatedEventPublisherBase,
+    private readonly orderEmployedGettedEventPublisherBase: OrderEmployedGettedEventPublisherBase,
+    private readonly benefitedService: IBenefitedDomainService,
+    private readonly orderBenefitedCreatedEventPublisherBase: OrderBenefitedCreatedEventPublisherBase,
+    private readonly orderBenefitedGettedEventPublisherBase: OrderBenefitedGettedEventPublisherBase,
   ) {
     super();
     this.orderAggregateRoot = new OrderAggregate({
       orderService,
       createdOrderEventPublisherBase,
+      kitService,
+      orderKitGettedEventPublisherBase,
+      employedService,
+      orderEmployedGettedEventPublisherBase,
+      benefitedService,
+      orderBenefitedGettedEventPublisherBase
     });
   }
 
@@ -43,27 +68,28 @@ export class CreateOrderUseCase<
   private async executeCommand(
     command: Command,
   ): Promise<OrderDomainEntityBase | null> {
-    if (!(command.kit && command.employed && command.benefited)) {
-      let benefited = new BenefitedDomainEntityBase();
-      let kit = new KitDomainEntityBase();
-      let employed = new EmployedDomainEntityBase();
+    if (command.kitId && command.employedId && command.benefitedId){
+      let kit = await this.orderAggregateRoot.getKit(command.kitId);
+      let employed = await this.orderAggregateRoot.getEmployed(command.employedId);
+      let benefited = await this.orderAggregateRoot.getBenefited(command.benefitedId);
       let data = { benefited: benefited, kit: kit, employed: employed };
       let entity = new OrderDomainEntityBase(data);
-      //this.orderAggregateRoot.createBenefited(benefited);
-      //this.orderAggregateRoot.createKit(kit);
-      //this.orderAggregateRoot.createEmployed(employed);
-      return this.orderAggregateRoot.createOrder(entity);
+      return this.executeOrderAggregateRoot(entity);
     }
-    return null;
-    //const ValueObject = this.createValueObject(command);
-    //this.validateValueObject(ValueObject);
-    //const entity = this.createEntityOrderDomain(ValueObject);
-    //return this.executeOrderAggregateRoot(entity);
+    else if (command.kit && command.employed && command.benefited) {
+      let kit = await this.orderAggregateRoot.createKit(command.kit);
+      let employed = await this.orderAggregateRoot.createEmployed(command.employed);
+      let benefited = await this.orderAggregateRoot.createBenefited(command.benefited);
+      let data = { benefited: benefited, kit: kit, employed: employed };
+      let entity = new OrderDomainEntityBase(data);
+      return this.executeOrderAggregateRoot(entity);
+    } else throw new BadRequestException;
+    
   }
 
   private async executeOrderAggregateRoot(
     aggregate: OrderDomainEntityBase,
-  ): Promise<KitDomainEntityBase | null> {
+  ): Promise<OrderDomainEntityBase | null> {
     return this.orderAggregateRoot.createOrder(aggregate);
   }
 }

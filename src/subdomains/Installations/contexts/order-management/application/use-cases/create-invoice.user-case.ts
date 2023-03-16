@@ -1,19 +1,25 @@
+import { BadRequestException } from '@nestjs/common';
+
 import {
   IUseCase,
   ValueObjectErrorHandler,
-  ValueObjectException,
 } from '../../../../../../libs/sofka';
 import { InvoiceAggregate } from '../../domain/aggregates';
 import { InvoiceDomainEntityBase } from '../../domain/entities';
-import { IInvoiceDomainEntity } from '../../domain/entities/interfaces';
-import { CreatedInvoiceEventPublisherBase } from '../../domain/events/publishers';
+import {
+  CreatedInvoiceEventPublisherBase,
+  InvoiceCompanyCreatedEventPublisherBase,
+  InvoiceCompanyGettedEventPublisherBase,
+  InvoiceFeeCreatedEventPublisherBase,
+  InvoiceFeeGettedEventPublisherBase,
+} from '../../domain/events/publishers';
 import { ICreateInvoiceCommand } from '../../domain/interfaces/commands';
 import { ICreateInvoiceResponse } from '../../domain/interfaces/responses';
-import { IInvoiceDomainService } from '../../domain/services';
 import {
-  InvoiceIdValueObject,
-  InvoiceStatusValueObject,
-} from '../../domain/value-objects';
+  ICompanyDomainService,
+  IFeeDomainService,
+  IInvoiceDomainService,
+} from '../../domain/services';
 
 export class CreateInvoiceUseCase<
     Command extends ICreateInvoiceCommand = ICreateInvoiceCommand,
@@ -27,11 +33,23 @@ export class CreateInvoiceUseCase<
   constructor(
     private readonly invoiceService: IInvoiceDomainService,
     private readonly createdInvoiceEventPublisherBase: CreatedInvoiceEventPublisherBase,
+    private readonly feeService: IFeeDomainService,
+    private readonly invoiceFeeCreatedEventPublisherBase: InvoiceFeeCreatedEventPublisherBase,
+    private readonly invoiceFeeGettedEventPublisherBase: InvoiceFeeGettedEventPublisherBase,
+    private readonly companyService: ICompanyDomainService,
+    private readonly invoiceCompanyCreatedEventPublisherBase: InvoiceCompanyCreatedEventPublisherBase,
+    private readonly invoiceCompanyGettedEventPublisherBase: InvoiceCompanyGettedEventPublisherBase
   ) {
     super();
     this.invoiceAggregateRoot = new InvoiceAggregate({
       invoiceService,
       createdInvoiceEventPublisherBase,
+      feeService,
+      invoiceFeeCreatedEventPublisherBase,
+      invoiceFeeGettedEventPublisherBase,
+      companyService,
+      invoiceCompanyCreatedEventPublisherBase,
+      invoiceCompanyGettedEventPublisherBase
     });
   }
 
@@ -44,53 +62,21 @@ export class CreateInvoiceUseCase<
   private async executeCommand(
     command: Command,
   ): Promise<InvoiceDomainEntityBase | null> {
-    const ValueObject = this.createValueObject(command);
-    this.validateValueObject(ValueObject);
-    const entity = this.createEntityInvoiceDomain(ValueObject);
-    return this.executeInvoiceAggregateRoot(entity);
-  }
-
-  private createValueObject(command: Command): IInvoiceDomainEntity {
-    const invoiceId = new InvoiceIdValueObject(command.invoiceId);
-    const status = new InvoiceStatusValueObject(command.status);
-    const company = command.company;
-    const fee = command.fee;
-
-    return {
-      invoiceId,
-      status,
-      company,
-      fee,
-    };
-  }
-
-  private validateValueObject(valueObject: IInvoiceDomainEntity): void {
-    const { invoiceId, status } = valueObject;
-
-    if (invoiceId instanceof InvoiceIdValueObject && invoiceId.hasErrors())
-      this.setErrors(invoiceId.getErrors());
-
-    if (status instanceof InvoiceStatusValueObject && status.hasErrors())
-      this.setErrors(status.getErrors());
-
-    if (this.hasErrors() === true)
-      throw new ValueObjectException(
-        'Hay algunos errores en el comando ejecutado por createInvoiceUserCase',
-        this.getErrors(),
-      );
-  }
-
-  private createEntityInvoiceDomain(
-    valueObject: IInvoiceDomainEntity,
-  ): InvoiceDomainEntityBase {
-    const { invoiceId, status, company, fee } = valueObject;
-
-    return new InvoiceDomainEntityBase({
-      invoiceId: invoiceId.valueOf(),
-      status: status.valueOf(),
-      company: company.valueOf(),
-      fee: fee.valueOf(),
-    });
+    if (command.companyId && command.feeId){
+      let company = await this.invoiceAggregateRoot.getCompany(command.companyId);
+      let fee = await this.invoiceAggregateRoot.getFee(command.feeId);
+      let data = { company: company, fee: fee };
+      let entity = new InvoiceDomainEntityBase(data);
+      return this.executeInvoiceAggregateRoot(entity);
+    }
+    else if (command.company && command.fee) {
+      let company = await this.invoiceAggregateRoot.createCompany(command.company);
+      let fee = await this.invoiceAggregateRoot.createFee(command.fee);
+      let data = { company: company, fee: fee };
+      let entity = new InvoiceDomainEntityBase(data);
+      return this.executeInvoiceAggregateRoot(entity);
+    } else throw new BadRequestException;
+    
   }
 
   private async executeInvoiceAggregateRoot(

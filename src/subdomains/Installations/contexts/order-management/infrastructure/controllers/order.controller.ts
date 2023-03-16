@@ -12,12 +12,23 @@ import {
   GetOrderUserCase,
 } from '../../application/use-cases';
 import {
+  CreatedBenefitedPublisher,
+  CreatedEmployedPublisher,
+  CreatedKitPublisher,
   CreatedOrderPublisher,
   DeletedOrderPublisher,
+  GettedBenefitedPublisher,
+  GettedEmployedPublisher,
+  GettedKitPublisher,
   GettedOrderPublisher,
   OrderStatusChangedPublisher,
 } from '../messaging/publisher';
-import { OrderService } from '../persistence/services';
+import {
+  BenefitedService,
+  EmployedService,
+  KitService,
+  OrderService,
+} from '../persistence/services';
 import {
   CreateOrderCommand,
   DeleteOrderCommand,
@@ -33,7 +44,17 @@ export class OrderController {
     private readonly createdOrderEventPublisher: CreatedOrderPublisher,
     private readonly gettedOrderEventPublisher: GettedOrderPublisher,
     private readonly deletedOrderEventPublisher: DeletedOrderPublisher,
-    private readonly orderStatusChangedPublisher: OrderStatusChangedPublisher
+    private readonly orderStatusChangedPublisher: OrderStatusChangedPublisher,
+
+    private readonly kitService: KitService,
+    private readonly createdKitPublisher: CreatedKitPublisher,
+    private readonly gettedKitPublisher: GettedKitPublisher,
+    private readonly employedService: EmployedService,
+    private readonly createdEmployedPublisher: CreatedEmployedPublisher,
+    private readonly gettedEmployedPublisher: GettedEmployedPublisher,
+    private readonly benefitedService: BenefitedService,
+    private readonly createdBenefitedPublisher: CreatedBenefitedPublisher,
+    private readonly gettedBenefitedPublisher: GettedBenefitedPublisher,
   ) {}
 
   @Post('/create')
@@ -41,6 +62,15 @@ export class OrderController {
     const useCase = new CreateOrderUseCase(
       this.orderService,
       this.createdOrderEventPublisher,
+      this.kitService,
+      this.createdKitPublisher,
+      this.gettedKitPublisher,
+      this.employedService,
+      this.createdEmployedPublisher,
+      this.gettedEmployedPublisher,
+      this.benefitedService,
+      this.createdBenefitedPublisher,
+      this.gettedBenefitedPublisher
     );
     return await useCase.execute(command);
   }

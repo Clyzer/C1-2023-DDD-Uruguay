@@ -12,12 +12,20 @@ import {
   GetInvoiceUserCase,
 } from '../../application/use-cases';
 import {
+  CreatedCompanyPublisher,
+  CreatedFeePublisher,
   CreatedInvoicePublisher,
   DeletedInvoicePublisher,
+  GettedCompanyPublisher,
+  GettedFeePublisher,
   GettedInvoicePublisher,
   InvoiceStatusChangedPublisher,
 } from '../messaging/publisher';
-import { InvoiceService } from '../persistence/services';
+import {
+  CompanyService,
+  FeeService,
+  InvoiceService,
+} from '../persistence/services';
 import {
   CreateInvoiceCommand,
   DeleteInvoiceCommand,
@@ -33,7 +41,14 @@ export class InvoiceController {
     private readonly createdInvoiceEventPublisher: CreatedInvoicePublisher,
     private readonly gettedInvoiceEventPublisher: GettedInvoicePublisher,
     private readonly deletedInvoiceEventPublisher: DeletedInvoicePublisher,
-    private readonly invoiceStatusChangedPublisher: InvoiceStatusChangedPublisher
+    private readonly invoiceStatusChangedPublisher: InvoiceStatusChangedPublisher,
+
+    private readonly companyService: CompanyService,
+    private readonly createdCompanyPublisher: CreatedCompanyPublisher,
+    private readonly gettedCompanyPublisher: GettedCompanyPublisher,
+    private readonly feeService: FeeService,
+    private readonly createdFeePublisher: CreatedFeePublisher,
+    private readonly gettedFeePublisher: GettedFeePublisher
   ) {}
 
   @Post('/create')
@@ -41,6 +56,12 @@ export class InvoiceController {
     const useCase = new CreateInvoiceUseCase(
       this.invoiceService,
       this.createdInvoiceEventPublisher,
+      this.feeService,
+      this.createdFeePublisher,
+      this.gettedFeePublisher,
+      this.companyService,
+      this.createdCompanyPublisher,
+      this.gettedCompanyPublisher
     );
     return await useCase.execute(command);
   }

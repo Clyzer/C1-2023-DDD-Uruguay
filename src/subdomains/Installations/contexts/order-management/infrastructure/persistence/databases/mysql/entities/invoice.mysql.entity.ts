@@ -1,7 +1,16 @@
-import { Column, Entity, OneToOne, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  Column,
+  Entity,
+  JoinColumn,
+  OneToOne,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
 
 import { InvoiceDomainEntityBase } from '../../../../../domain/entities';
-import { CompanyMySqlEntity, FeeMySqlEntity, OrderMySqlEntity } from './';
+import {
+  CompanyMySqlEntity,
+  FeeMySqlEntity,
+} from './';
 
 @Entity()
 export class InvoiceMySqlEntity extends InvoiceDomainEntityBase {
@@ -11,21 +20,20 @@ export class InvoiceMySqlEntity extends InvoiceDomainEntityBase {
   @Column({ nullable: true })
   status: boolean;
 
-  @OneToOne(() => CompanyMySqlEntity, (entity) => entity)
+  @OneToOne(() => CompanyMySqlEntity, entity => entity.companyId, { cascade: true })
+  @JoinColumn({ name: 'companyId' })
   company: CompanyMySqlEntity;
 
-  @OneToOne(() => FeeMySqlEntity, (entity) => entity)
+  @OneToOne(() => FeeMySqlEntity, entity => entity.feeId, { cascade: true })
+  @JoinColumn({ name: 'feeId' })
   fee: FeeMySqlEntity;
 
-  @OneToOne(() => OrderMySqlEntity, (entity) => entity)
-  order: OrderMySqlEntity;
+  @Column({ type: 'bigint', nullable: true })
+  createdAt?: number;
 
   @Column({ type: 'bigint', nullable: true })
-  createdAt: number;
+  updatedAt?: number;
 
   @Column({ type: 'bigint', nullable: true })
-  updatedAt: number;
-
-  @Column({ type: 'bigint', nullable: true })
-  deletedAt: number;
+  deletedAt?: number;
 }

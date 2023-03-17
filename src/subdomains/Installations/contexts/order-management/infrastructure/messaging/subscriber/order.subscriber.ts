@@ -6,13 +6,28 @@ import {
   Payload,
 } from '@nestjs/microservices';
 
-import { OrderEntity } from '../../persistence';
-import { EventEntity } from '../../persistence/entities/event.entity';
-import { OrderService } from '../../persistence/services';
+import {
+  BenefitedEntity,
+  EmployedEntity,
+  EventEntity,
+  KitEntity,
+  OrderEntity,
+} from '../../persistence/entities';
+import {
+  BenefitedService,
+  EmployedService,
+  KitService,
+  OrderService,
+} from '../../persistence/services';
 
 @Controller()
 export class OrderController {
-  constructor(private readonly orderService: OrderService) {}
+  constructor(
+    private readonly orderService: OrderService,
+    private readonly kitService: KitService,
+    private readonly employedService: EmployedService,
+    private readonly benefitedService: BenefitedService
+    ) {}
 
   /**
    * EventPattern se utiliza para definir un patrón de evento de Kafka
@@ -32,15 +47,22 @@ export class OrderController {
    * @memberof OrderController
    */
   @EventPattern('order_management.created_order')
-  createdOrder(@Payload() data: EventEntity, @Ctx() context: KafkaContext) {
+  async createdOrder(@Payload() data: EventEntity, @Ctx() context: KafkaContext) {
     console.log('--------------------------------------');
     console.log('Data: ', data.data);
     console.log('--------------------------------------');
     console.log('Context: ', context);
     console.log('--------------------------------------');
 
-    const object: OrderEntity = JSON.parse(JSON.stringify(data.data));
-    this.orderService.createOrder(object);
+    let object: OrderEntity = JSON.parse(JSON.stringify(data.data));
+    let kit: KitEntity = await this.kitService.createKit(object.kit);
+    let employed: EmployedEntity = await this.employedService.createEmployed(object.employed);
+    let benefited: BenefitedEntity = await this.benefitedService.createBenefited(object.benefited);
+    object.kit = kit;
+    object.employed = employed;
+    object.benefited = benefited;
+    await this.orderService.createOrder(object);
+
   }
 
   @EventPattern('order_management.getted_order')

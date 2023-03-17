@@ -44,17 +44,20 @@ export class CreateOrderUseCase<
     private readonly orderEmployedGettedEventPublisherBase: OrderEmployedGettedEventPublisherBase,
     private readonly benefitedService: IBenefitedDomainService,
     private readonly orderBenefitedCreatedEventPublisherBase: OrderBenefitedCreatedEventPublisherBase,
-    private readonly orderBenefitedGettedEventPublisherBase: OrderBenefitedGettedEventPublisherBase,
+    private readonly orderBenefitedGettedEventPublisherBase: OrderBenefitedGettedEventPublisherBase
   ) {
     super();
     this.orderAggregateRoot = new OrderAggregate({
       orderService,
       createdOrderEventPublisherBase,
       kitService,
+      orderKitCreatedEventPublisherBase,
       orderKitGettedEventPublisherBase,
       employedService,
+      orderEmployedCreatedEventPublisherBase,
       orderEmployedGettedEventPublisherBase,
       benefitedService,
+      orderBenefitedCreatedEventPublisherBase,
       orderBenefitedGettedEventPublisherBase
     });
   }

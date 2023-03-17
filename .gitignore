@@ -35,3 +35,7 @@ lerna-debug.log*
 # IDE - VSCode
 /.vscode
 /.vscode/*
+
+# Draw.io
+.$DDD-Sánchez.drawio.bkp
+.$DDD-Sánchez.drawio.dtmp

@@ -1,5 +1,4 @@
-import { EventPublisherBase } from 'src/libs';
-
+import { EventPublisherBase } from '../../../../../../../libs/sofka';
 import { OrderDomainEntityBase } from '../../entities';
 
 export abstract class CreatedOrderEventPublisherBase<

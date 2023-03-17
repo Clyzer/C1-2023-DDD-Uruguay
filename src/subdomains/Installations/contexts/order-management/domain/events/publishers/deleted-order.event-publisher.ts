@@ -1,4 +1,4 @@
-import { EventPublisherBase } from 'src/libs';
+import { EventPublisherBase } from '../../../../../../../libs/sofka';
 
 export abstract class DeletedOrderEventPublisherBase<
   Response = boolean,

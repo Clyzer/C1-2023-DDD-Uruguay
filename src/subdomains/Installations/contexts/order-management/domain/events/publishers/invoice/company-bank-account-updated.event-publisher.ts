@@ -1,5 +1,4 @@
-import { EventPublisherBase } from 'src/libs';
-
+import { EventPublisherBase } from '../../../../../../../../libs/sofka';
 import { CompanyDomainEntityBase } from '../../../entities/invoice';
 
 export abstract class InvoiceCompanyBankAccountUpdatedEventPublisherBase<

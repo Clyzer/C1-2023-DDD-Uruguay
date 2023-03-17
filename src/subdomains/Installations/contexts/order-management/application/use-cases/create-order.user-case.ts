@@ -39,17 +39,17 @@ export class CreateOrderUseCase<
   private readonly orderAggregateRoot: OrderAggregate;
 
   constructor(
-    private readonly orderService: IOrderDomainService,
-    private readonly createdOrderEventPublisherBase: CreatedOrderEventPublisherBase,
-    private readonly kitService: IKitDomainService,
-    private readonly orderKitCreatedEventPublisherBase: OrderKitCreatedEventPublisherBase,
-    private readonly orderKitGettedEventPublisherBase: OrderKitGettedEventPublisherBase,
-    private readonly employedService: IEmployedDomainService,
-    private readonly orderEmployedCreatedEventPublisherBase: OrderEmployedCreatedEventPublisherBase,
-    private readonly orderEmployedGettedEventPublisherBase: OrderEmployedGettedEventPublisherBase,
-    private readonly benefitedService: IBenefitedDomainService,
-    private readonly orderBenefitedCreatedEventPublisherBase: OrderBenefitedCreatedEventPublisherBase,
-    private readonly orderBenefitedGettedEventPublisherBase: OrderBenefitedGettedEventPublisherBase
+    private readonly orderService?: IOrderDomainService,
+    private readonly createdOrderEventPublisherBase?: CreatedOrderEventPublisherBase,
+    private readonly kitService?: IKitDomainService,
+    private readonly orderKitCreatedEventPublisherBase?: OrderKitCreatedEventPublisherBase,
+    private readonly orderKitGettedEventPublisherBase?: OrderKitGettedEventPublisherBase,
+    private readonly employedService?: IEmployedDomainService,
+    private readonly orderEmployedCreatedEventPublisherBase?: OrderEmployedCreatedEventPublisherBase,
+    private readonly orderEmployedGettedEventPublisherBase?: OrderEmployedGettedEventPublisherBase,
+    private readonly benefitedService?: IBenefitedDomainService,
+    private readonly orderBenefitedCreatedEventPublisherBase?: OrderBenefitedCreatedEventPublisherBase,
+    private readonly orderBenefitedGettedEventPublisherBase?: OrderBenefitedGettedEventPublisherBase
   ) {
     super();
     this.orderAggregateRoot = new OrderAggregate({

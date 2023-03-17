@@ -6,6 +6,7 @@ import {
   BenefitedMySqlEntity,
   CompanyMySqlEntity,
   EmployedMySqlEntity,
+  EventMySqlEntity,
   FeeMySqlEntity,
   InvoiceMySqlEntity,
   KitMySqlEntity,
@@ -15,6 +16,7 @@ import {
   BenefitedRepository,
   CompanyRepository,
   EmployedRepository,
+  EventRepository,
   FeeRepository,
   InvoiceRepository,
   KitRepository,
@@ -24,6 +26,7 @@ import {
   BenefitedMySqlService,
   CompanyMySqlService,
   EmployedMySqlService,
+  EventMySqlService,
   FeeMySqlService,
   InvoiceMySqlService,
   KitMySqlService,
@@ -44,6 +47,7 @@ import {
       KitMySqlEntity,
       InvoiceMySqlEntity,
       OrderMySqlEntity,
+      EventMySqlEntity
     ]),
   ],
   providers: [
@@ -54,6 +58,7 @@ import {
     InvoiceMySqlService,
     KitMySqlService,
     OrderMySqlService,
+    EventMySqlService,
 
     BenefitedRepository,
     CompanyRepository,
@@ -62,6 +67,7 @@ import {
     InvoiceRepository,
     KitRepository,
     OrderRepository,
+    EventRepository
   ],
   exports: [
     BenefitedMySqlService,
@@ -71,6 +77,7 @@ import {
     InvoiceMySqlService,
     KitMySqlService,
     OrderMySqlService,
+    EventMySqlService,
 
     BenefitedRepository,
     CompanyRepository,
@@ -79,6 +86,7 @@ import {
     InvoiceRepository,
     KitRepository,
     OrderRepository,
+    EventRepository
   ],
 })
 export class MysqlModule {}

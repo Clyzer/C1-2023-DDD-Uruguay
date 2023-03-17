@@ -1,9 +1,3 @@
-export class EventEntity {
-  id: string;
+import { EventMySqlEntity } from '../databases/mysql/entities';
 
-  type: string;
-
-  data: string;
-
-  createdAt: number;
-}
+export class EventEntity extends EventMySqlEntity {}

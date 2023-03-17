@@ -12,7 +12,4 @@ export interface ICreateOrderCommand {
   kitId?: string;
   employedId?: string;
   benefitedId?: string;
-  createdAt?: number;
-  updatedAt?: number;
-  deletedAt?: number;
 }

@@ -86,7 +86,7 @@ import {
         },
       },
     ]),
-    PersistenceModule,
+    PersistenceModule
   ],
   controllers: [
     InvoiceController,

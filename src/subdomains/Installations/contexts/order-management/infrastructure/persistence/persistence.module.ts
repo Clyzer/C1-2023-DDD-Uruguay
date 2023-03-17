@@ -1,8 +1,15 @@
 import { Module } from '@nestjs/common';
 
 import { MysqlModule } from './databases';
-import { InvoiceService, OrderService } from './services';
-import { CompanyService, FeeService } from './services/invoice';
+import {
+  EventService,
+  InvoiceService,
+  OrderService,
+} from './services';
+import {
+  CompanyService,
+  FeeService,
+} from './services/invoice';
 import {
   BenefitedService,
   EmployedService,
@@ -19,6 +26,7 @@ import {
     BenefitedService,
     EmployedService,
     KitService,
+    EventService
   ],
   exports: [
     InvoiceService,
@@ -28,6 +36,7 @@ import {
     BenefitedService,
     EmployedService,
     KitService,
+    EventService
   ],
 })
 export class PersistenceModule {}

@@ -6,13 +6,12 @@ import {
   Payload,
 } from '@nestjs/microservices';
 
-import { EmployedEntity } from '../../../persistence';
 import { EventEntity } from '../../../persistence/entities/event.entity';
-import { EmployedService } from '../../../persistence/services';
+import { EventService } from '../../../persistence/services';
 
 @Controller()
 export class EmployedController {
-  constructor(private readonly employedService: EmployedService) {}
+  constructor(private readonly eventService: EventService) {}
 
   /**
    * EventPattern se utiliza para definir un patrón de evento de Kafka
@@ -38,9 +37,10 @@ export class EmployedController {
     console.log('--------------------------------------');
     console.log('Context: ', context);
     console.log('--------------------------------------');
-
-    const object: EmployedEntity = JSON.parse(JSON.stringify(data.data));
-    this.employedService.createEmployed(object);
+    data.type = 'order_management.order.employed_created';
+    data.createdAt = Date.now();
+    data.data = JSON.stringify(data.data);
+    this.eventService.createEvent(data);
   }
 
   @EventPattern('order_management.order.employed_getted')
@@ -50,9 +50,10 @@ export class EmployedController {
     console.log('--------------------------------------');
     console.log('Context: ', context);
     console.log('--------------------------------------');
-
-    const object: EmployedEntity = JSON.parse(JSON.stringify(data.data));
-    this.employedService.getEmployed(object.employedId);
+    data.type = 'order_management.order.employed_getted';
+    data.createdAt = Date.now();
+    data.data = JSON.stringify(data.data);
+    this.eventService.createEvent(data);
   }
 
   @EventPattern('order_management.order.employed_deleted')
@@ -62,9 +63,10 @@ export class EmployedController {
     console.log('--------------------------------------');
     console.log('Context: ', context);
     console.log('--------------------------------------');
-
-    const object: EmployedEntity = JSON.parse(JSON.stringify(data.data));
-    this.employedService.deleteEmployed(object.employedId);
+    data.type = 'order_management.order.employed_deleted';
+    data.createdAt = Date.now();
+    data.data = JSON.stringify(data.data);
+    this.eventService.createEvent(data);
   }
 
   @EventPattern('order_management.order.employed_name_updated')
@@ -77,9 +79,10 @@ export class EmployedController {
     console.log('--------------------------------------');
     console.log('Context: ', context);
     console.log('--------------------------------------');
-
-    const object: EmployedEntity = JSON.parse(JSON.stringify(data.data));
-    this.employedService.updateEmployedName(object.employedId, object);
+    data.type = 'order_management.order.employed_name_updated';
+    data.createdAt = Date.now();
+    data.data = JSON.stringify(data.data);
+    this.eventService.createEvent(data);
   }
 
   @EventPattern('order_management.order.employed_phone_updated')
@@ -92,8 +95,9 @@ export class EmployedController {
     console.log('--------------------------------------');
     console.log('Context: ', context);
     console.log('--------------------------------------');
-
-    const object: EmployedEntity = JSON.parse(JSON.stringify(data.data));
-    this.employedService.updateEmployedPhone(object.employedId, object);
+    data.type = 'order_management.order.employed_phone_updated';
+    data.createdAt = Date.now();
+    data.data = JSON.stringify(data.data);
+    this.eventService.createEvent(data);
   }
 }

@@ -1,8 +1,12 @@
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  Column,
+  Entity,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
 
 import { KitDomainEntityBase } from '../../../../../../domain/entities/order';
 
-@Entity()
+@Entity('Kits')
 export class KitMySqlEntity extends KitDomainEntityBase {
   @PrimaryGeneratedColumn('uuid')
   kitId: string;

@@ -6,28 +6,12 @@ import {
   Payload,
 } from '@nestjs/microservices';
 
-import {
-  BenefitedEntity,
-  EmployedEntity,
-  EventEntity,
-  KitEntity,
-  OrderEntity,
-} from '../../persistence/entities';
-import {
-  BenefitedService,
-  EmployedService,
-  KitService,
-  OrderService,
-} from '../../persistence/services';
+import { EventEntity } from '../../persistence/entities';
+import { EventService } from '../../persistence/services';
 
 @Controller()
 export class OrderController {
-  constructor(
-    private readonly orderService: OrderService,
-    private readonly kitService: KitService,
-    private readonly employedService: EmployedService,
-    private readonly benefitedService: BenefitedService
-    ) {}
+  constructor(private readonly eventService: EventService) {}
 
   /**
    * EventPattern se utiliza para definir un patrón de evento de Kafka
@@ -47,22 +31,16 @@ export class OrderController {
    * @memberof OrderController
    */
   @EventPattern('order_management.created_order')
-  async createdOrder(@Payload() data: EventEntity, @Ctx() context: KafkaContext) {
+  createdOrder(@Payload() data: EventEntity, @Ctx() context: KafkaContext) {
     console.log('--------------------------------------');
     console.log('Data: ', data.data);
     console.log('--------------------------------------');
     console.log('Context: ', context);
     console.log('--------------------------------------');
-
-    let object: OrderEntity = JSON.parse(JSON.stringify(data.data));
-    let kit: KitEntity = await this.kitService.createKit(object.kit);
-    let employed: EmployedEntity = await this.employedService.createEmployed(object.employed);
-    let benefited: BenefitedEntity = await this.benefitedService.createBenefited(object.benefited);
-    object.kit = kit;
-    object.employed = employed;
-    object.benefited = benefited;
-    await this.orderService.createOrder(object);
-
+    data.type = 'order_management.created_order';
+    data.createdAt = Date.now();
+    data.data = JSON.stringify(data.data);
+    this.eventService.createEvent(data);
   }
 
   @EventPattern('order_management.getted_order')
@@ -72,9 +50,10 @@ export class OrderController {
     console.log('--------------------------------------');
     console.log('Context: ', context);
     console.log('--------------------------------------');
-
-    const object: OrderEntity = JSON.parse(JSON.stringify(data.data));
-    this.orderService.getOrder(object.orderId);
+    data.type = 'order_management.getted_order';
+    data.createdAt = Date.now();
+    data.data = JSON.stringify(data.data);
+    this.eventService.createEvent(data);
   }
 
   @EventPattern('order_management.deleted_order')
@@ -84,8 +63,9 @@ export class OrderController {
     console.log('--------------------------------------');
     console.log('Context: ', context);
     console.log('--------------------------------------');
-
-    const object: OrderEntity = JSON.parse(JSON.stringify(data.data));
-    this.orderService.deleteOrder(object.orderId);
+    data.type = 'order_management.deleted_order';
+    data.createdAt = Date.now();
+    data.data = JSON.stringify(data.data);
+    this.eventService.createEvent(data);
   }
 }

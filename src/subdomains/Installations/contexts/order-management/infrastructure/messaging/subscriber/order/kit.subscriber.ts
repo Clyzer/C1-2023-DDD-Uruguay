@@ -6,13 +6,12 @@ import {
   Payload,
 } from '@nestjs/microservices';
 
-import { KitEntity } from '../../../persistence';
 import { EventEntity } from '../../../persistence/entities/event.entity';
-import { KitService } from '../../../persistence/services';
+import { EventService } from '../../../persistence/services';
 
 @Controller()
 export class KitController {
-  constructor(private readonly kitService: KitService) {}
+  constructor(private readonly eventService: EventService) {}
 
   /**
    * EventPattern se utiliza para definir un patrón de evento de Kafka
@@ -38,9 +37,10 @@ export class KitController {
     console.log('--------------------------------------');
     console.log('Context: ', context);
     console.log('--------------------------------------');
-
-    const object: KitEntity = JSON.parse(JSON.stringify(data.data));
-    this.kitService.createKit(object);
+    data.type = 'order_management.order.kit_created';
+    data.createdAt = Date.now();
+    data.data = JSON.stringify(data.data);
+    this.eventService.createEvent(data);
   }
 
   @EventPattern('order_management.order.kit_getted')
@@ -50,9 +50,10 @@ export class KitController {
     console.log('--------------------------------------');
     console.log('Context: ', context);
     console.log('--------------------------------------');
-
-    const object: KitEntity = JSON.parse(JSON.stringify(data.data));
-    this.kitService.getKit(object.kitId);
+    data.type = 'order_management.order.kit_getted';
+    data.createdAt = Date.now();
+    data.data = JSON.stringify(data.data);
+    this.eventService.createEvent(data);
   }
 
   @EventPattern('order_management.order.kit_deleted')
@@ -62,9 +63,10 @@ export class KitController {
     console.log('--------------------------------------');
     console.log('Context: ', context);
     console.log('--------------------------------------');
-
-    const object: KitEntity = JSON.parse(JSON.stringify(data.data));
-    this.kitService.deleteKit(object.kitId);
+    data.type = 'order_management.order.kit_deleted';
+    data.createdAt = Date.now();
+    data.data = JSON.stringify(data.data);
+    this.eventService.createEvent(data);
   }
 
   @EventPattern('order_management.order.kit_model_updated')
@@ -74,9 +76,9 @@ export class KitController {
     console.log('--------------------------------------');
     console.log('Context: ', context);
     console.log('--------------------------------------');
-
-    const object: KitEntity = JSON.parse(JSON.stringify(data.data));
-    console.log(object);
-    this.kitService.updateKitModel(object.kitId, object);
+    data.type = 'order_management.order.kit_model_updated';
+    data.createdAt = Date.now();
+    data.data = JSON.stringify(data.data);
+    this.eventService.createEvent(data);
   }
 }

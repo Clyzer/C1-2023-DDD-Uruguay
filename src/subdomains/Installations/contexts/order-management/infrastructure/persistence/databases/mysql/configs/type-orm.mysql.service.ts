@@ -1,11 +1,15 @@
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { TypeOrmModuleOptions, TypeOrmOptionsFactory } from '@nestjs/typeorm';
+import {
+  TypeOrmModuleOptions,
+  TypeOrmOptionsFactory,
+} from '@nestjs/typeorm';
 
 import {
   BenefitedMySqlEntity,
   CompanyMySqlEntity,
   EmployedMySqlEntity,
+  EventMySqlEntity,
   FeeMySqlEntity,
   InvoiceMySqlEntity,
   KitMySqlEntity,
@@ -37,8 +41,10 @@ export class TypeOrmMySqlConfigService implements TypeOrmOptionsFactory {
         KitMySqlEntity,
         InvoiceMySqlEntity,
         OrderMySqlEntity,
+        EventMySqlEntity
       ],
       synchronize: true,
+      logging: true
     };
   }
 }

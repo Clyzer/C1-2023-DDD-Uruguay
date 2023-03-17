@@ -5,7 +5,12 @@ import {
   ValueObjectErrorHandler,
 } from '../../../../../../libs/sofka';
 import { OrderAggregate } from '../../domain/aggregates';
-import { OrderDomainEntityBase } from '../../domain/entities';
+import {
+  BenefitedDomainEntityBase,
+  EmployedDomainEntityBase,
+  KitDomainEntityBase,
+  OrderDomainEntityBase,
+} from '../../domain/entities';
 import {
   CreatedOrderEventPublisherBase,
   OrderBenefitedCreatedEventPublisherBase,
@@ -80,9 +85,15 @@ export class CreateOrderUseCase<
       return this.executeOrderAggregateRoot(entity);
     }
     else if (command.kit && command.employed && command.benefited) {
-      let kit = await this.orderAggregateRoot.createKit(command.kit);
-      let employed = await this.orderAggregateRoot.createEmployed(command.employed);
-      let benefited = await this.orderAggregateRoot.createBenefited(command.benefited);
+      let kitEntity = new KitDomainEntityBase(command.kit);
+      let kit = await this.orderAggregateRoot.createKit(kitEntity);
+
+      let employedEntity = new EmployedDomainEntityBase(command.employed);
+      let employed = await this.orderAggregateRoot.createEmployed(employedEntity);
+
+      let benefitedEntity = new BenefitedDomainEntityBase(command.benefited);
+      let benefited = await this.orderAggregateRoot.createBenefited(benefitedEntity);
+      
       let data = { benefited: benefited, kit: kit, employed: employed };
       let entity = new OrderDomainEntityBase(data);
       return this.executeOrderAggregateRoot(entity);

@@ -12,7 +12,7 @@ import {
   FeeMySqlEntity,
 } from './';
 
-@Entity()
+@Entity('Invoices')
 export class InvoiceMySqlEntity extends InvoiceDomainEntityBase {
   @PrimaryGeneratedColumn('uuid')
   invoiceId: string;

@@ -6,25 +6,12 @@ import {
   Payload,
 } from '@nestjs/microservices';
 
-import {
-  CompanyEntity,
-  EventEntity,
-  FeeEntity,
-  InvoiceEntity,
-} from '../../persistence';
-import {
-  CompanyService,
-  FeeService,
-  InvoiceService,
-} from '../../persistence/services';
+import { EventEntity } from '../../persistence';
+import { EventService } from '../../persistence/services';
 
 @Controller()
 export class InvoiceController {
-  constructor(
-    private readonly invoiceService: InvoiceService,
-    private readonly companyService: CompanyService,
-    private readonly feeService: FeeService
-    ) {}
+  constructor(private readonly eventService: EventService) {}
 
   /**
    * EventPattern se utiliza para definir un patrón de evento de Kafka
@@ -44,19 +31,16 @@ export class InvoiceController {
    * @memberof InvoiceController
    */
   @EventPattern('order_management.created_invoice')
-  async createdInvoice(@Payload() data: EventEntity, @Ctx() context: KafkaContext) {
+  createdInvoice(@Payload() data: EventEntity, @Ctx() context: KafkaContext) {
     console.log('--------------------------------------');
     console.log('Data: ', data.data);
     console.log('--------------------------------------');
     console.log('Context: ', context);
     console.log('--------------------------------------');
-
-    let object: InvoiceEntity = JSON.parse(JSON.stringify(data.data));
-    let company: CompanyEntity = await this.companyService.createCompany(object.company);
-    let fee: FeeEntity = await this.feeService.createFee(object.fee);
-    object.company = company;
-    object.fee = fee;
-    await this.invoiceService.createInvoice(object);;
+    data.type = 'order_management.created_invoice';
+    data.createdAt = Date.now();
+    data.data = JSON.stringify(data.data);
+    this.eventService.createEvent(data);
   }
 
   @EventPattern('order_management.getted_invoice')
@@ -66,9 +50,10 @@ export class InvoiceController {
     console.log('--------------------------------------');
     console.log('Context: ', context);
     console.log('--------------------------------------');
-
-    const object: InvoiceEntity = JSON.parse(JSON.stringify(data.data));
-    this.invoiceService.getInvoice(object.invoiceId);
+    data.type = 'order_management.getted_invoice';
+    data.createdAt = Date.now();
+    data.data = JSON.stringify(data.data);
+    this.eventService.createEvent(data);
   }
 
   @EventPattern('order_management.deleted_invoice')
@@ -78,8 +63,9 @@ export class InvoiceController {
     console.log('--------------------------------------');
     console.log('Context: ', context);
     console.log('--------------------------------------');
-
-    const object: InvoiceEntity = JSON.parse(JSON.stringify(data.data));
-    this.invoiceService.deleteInvoice(object.invoiceId);
+    data.type = 'order_management.deleted_invoice';
+    data.createdAt = Date.now();
+    data.data = JSON.stringify(data.data);
+    this.eventService.createEvent(data);
   }
 }

@@ -13,7 +13,7 @@ import {
   KitMySqlEntity,
 } from './';
 
-@Entity()
+@Entity('Orders')
 export class OrderMySqlEntity extends OrderDomainEntityBase {
   @PrimaryGeneratedColumn('uuid')
   orderId: string;

@@ -6,13 +6,12 @@ import {
   Payload,
 } from '@nestjs/microservices';
 
-import { CompanyEntity } from '../../../persistence';
 import { EventEntity } from '../../../persistence/entities/event.entity';
-import { CompanyService } from '../../../persistence/services';
+import { EventService } from '../../../persistence/services';
 
 @Controller()
 export class CompanyController {
-  constructor(private readonly companyService: CompanyService) {}
+  constructor(private readonly eventService: EventService) {}
 
   /**
    * EventPattern se utiliza para definir un patrón de evento de Kafka
@@ -38,9 +37,10 @@ export class CompanyController {
     console.log('--------------------------------------');
     console.log('Context: ', context);
     console.log('--------------------------------------');
-
-    const object: CompanyEntity = JSON.parse(JSON.stringify(data.data));
-    this.companyService.createCompany(object);
+    data.type = 'order_management.invoice.company_created';
+    data.createdAt = Date.now();
+    data.data = JSON.stringify(data.data);
+    this.eventService.createEvent(data);
   }
 
   @EventPattern('order_management.invoice.company_getted')
@@ -50,9 +50,10 @@ export class CompanyController {
     console.log('--------------------------------------');
     console.log('Context: ', context);
     console.log('--------------------------------------');
-
-    const object: CompanyEntity = JSON.parse(JSON.stringify(data.data));
-    this.companyService.getCompany(object.companyId);
+    data.type = 'order_management.invoice.company_getted';
+    data.createdAt = Date.now();
+    data.data = JSON.stringify(data.data);
+    this.eventService.createEvent(data);
   }
 
   @EventPattern('order_management.invoice.company_deleted')
@@ -62,9 +63,10 @@ export class CompanyController {
     console.log('--------------------------------------');
     console.log('Context: ', context);
     console.log('--------------------------------------');
-
-    const object: CompanyEntity = JSON.parse(JSON.stringify(data.data));
-    this.companyService.deleteCompany(object.companyId);
+    data.type = 'order_management.invoice.company_deleted';
+    data.createdAt = Date.now();
+    data.data = JSON.stringify(data.data);
+    this.eventService.createEvent(data);
   }
 
   @EventPattern('order_management.invoice.company_name_updated')
@@ -77,9 +79,10 @@ export class CompanyController {
     console.log('--------------------------------------');
     console.log('Context: ', context);
     console.log('--------------------------------------');
-
-    const object: CompanyEntity = JSON.parse(JSON.stringify(data.data));
-    this.companyService.updateCompanyName(object.companyId, object);
+    data.type = 'order_management.invoice.company_name_updated';
+    data.createdAt = Date.now();
+    data.data = JSON.stringify(data.data);
+    this.eventService.createEvent(data);
   }
 
   @EventPattern('order_management.invoice.company_bank_account_updated')
@@ -92,8 +95,9 @@ export class CompanyController {
     console.log('--------------------------------------');
     console.log('Context: ', context);
     console.log('--------------------------------------');
-
-    const object: CompanyEntity = JSON.parse(JSON.stringify(data.data));
-    this.companyService.updateCompanyBankAccount(object.companyId, object);
+    data.type = 'order_management.invoice.company_bank_account_updated';
+    data.createdAt = Date.now();
+    data.data = JSON.stringify(data.data);
+    this.eventService.createEvent(data);
   }
 }

@@ -6,13 +6,12 @@ import {
   Payload,
 } from '@nestjs/microservices';
 
-import { BenefitedEntity } from '../../../persistence';
 import { EventEntity } from '../../../persistence/entities/event.entity';
-import { BenefitedService } from '../../../persistence/services';
+import { EventService } from '../../../persistence/services';
 
 @Controller()
 export class BenefitedController {
-  constructor(private readonly benefitedService: BenefitedService) {}
+  constructor(private readonly eventService: EventService) {}
 
   /**
    * EventPattern se utiliza para definir un patrón de evento de Kafka
@@ -38,9 +37,10 @@ export class BenefitedController {
     console.log('--------------------------------------');
     console.log('Context: ', context);
     console.log('--------------------------------------');
-
-    const object: BenefitedEntity = JSON.parse(JSON.stringify(data.data));
-    this.benefitedService.createBenefited(object);
+    data.type = 'order_management.order.benefited_created';
+    data.createdAt = Date.now();
+    data.data = JSON.stringify(data.data);
+    this.eventService.createEvent(data);
   }
 
   @EventPattern('order_management.order.benefited_getted')
@@ -50,9 +50,10 @@ export class BenefitedController {
     console.log('--------------------------------------');
     console.log('Context: ', context);
     console.log('--------------------------------------');
-
-    const object: BenefitedEntity = JSON.parse(JSON.stringify(data.data));
-    this.benefitedService.getBenefited(object.benefitedId);
+    data.type = 'order_management.order.benefited_getted';
+    data.createdAt = Date.now();
+    data.data = JSON.stringify(data.data);
+    this.eventService.createEvent(data);
   }
 
   @EventPattern('order_management.order.benefited_deleted')
@@ -62,9 +63,10 @@ export class BenefitedController {
     console.log('--------------------------------------');
     console.log('Context: ', context);
     console.log('--------------------------------------');
-
-    const object: BenefitedEntity = JSON.parse(JSON.stringify(data.data));
-    this.benefitedService.deleteBenefited(object.benefitedId);
+    data.type = 'order_management.order.benefited_deleted';
+    data.createdAt = Date.now();
+    data.data = JSON.stringify(data.data);
+    this.eventService.createEvent(data);
   }
 
   @EventPattern('order_management.order.benefited_name_updated')
@@ -77,9 +79,10 @@ export class BenefitedController {
     console.log('--------------------------------------');
     console.log('Context: ', context);
     console.log('--------------------------------------');
-
-    const object: BenefitedEntity = JSON.parse(JSON.stringify(data.data));
-    this.benefitedService.updateBenefitedName(object.benefitedId, object);
+    data.type = 'order_management.order.benefited_name_updated';
+    data.createdAt = Date.now();
+    data.data = JSON.stringify(data.data);
+    this.eventService.createEvent(data);
   }
 
   @EventPattern('order_management.order.benefited_phone_updated')
@@ -92,9 +95,10 @@ export class BenefitedController {
     console.log('--------------------------------------');
     console.log('Context: ', context);
     console.log('--------------------------------------');
-
-    const object: BenefitedEntity = JSON.parse(JSON.stringify(data.data));
-    this.benefitedService.updateBenefitedPhone(object.benefitedId, object);
+    data.type = 'order_management.order.benefited_phone_updated';
+    data.createdAt = Date.now();
+    data.data = JSON.stringify(data.data);
+    this.eventService.createEvent(data);
   }
 
   @EventPattern('order_management.order.benefited_address_updated')
@@ -107,9 +111,10 @@ export class BenefitedController {
     console.log('--------------------------------------');
     console.log('Context: ', context);
     console.log('--------------------------------------');
-
-    const object: BenefitedEntity = JSON.parse(JSON.stringify(data.data));
-    this.benefitedService.updateBenefitedAddress(object.benefitedId, object);
+    data.type = 'order_management.order.benefited_address_updated';
+    data.createdAt = Date.now();
+    data.data = JSON.stringify(data.data);
+    this.eventService.createEvent(data);
   }
 
   @EventPattern('order_management.order.benefited_companyid_updated')
@@ -122,8 +127,9 @@ export class BenefitedController {
     console.log('--------------------------------------');
     console.log('Context: ', context);
     console.log('--------------------------------------');
-
-    const object: BenefitedEntity = JSON.parse(JSON.stringify(data.data));
-    this.benefitedService.updateBenefitedCompanyId(object.benefitedId, object);
+    data.type = 'order_management.order.benefited_companyid_updated';
+    data.createdAt = Date.now();
+    data.data = JSON.stringify(data.data);
+    this.eventService.createEvent(data);
   }
 }

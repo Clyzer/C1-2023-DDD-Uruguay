@@ -5,7 +5,11 @@ import {
   ValueObjectErrorHandler,
 } from '../../../../../../libs/sofka';
 import { InvoiceAggregate } from '../../domain/aggregates';
-import { InvoiceDomainEntityBase } from '../../domain/entities';
+import {
+  CompanyDomainEntityBase,
+  FeeDomainEntityBase,
+  InvoiceDomainEntityBase,
+} from '../../domain/entities';
 import {
   CreatedInvoiceEventPublisherBase,
   InvoiceCompanyCreatedEventPublisherBase,
@@ -70,8 +74,12 @@ export class CreateInvoiceUseCase<
       return this.executeInvoiceAggregateRoot(entity);
     }
     else if (command.company && command.fee) {
-      let company = await this.invoiceAggregateRoot.createCompany(command.company);
-      let fee = await this.invoiceAggregateRoot.createFee(command.fee);
+      let companyEntity = new CompanyDomainEntityBase(command.company);
+      let company = await this.invoiceAggregateRoot.createCompany(companyEntity);
+
+      let feeEntity = new FeeDomainEntityBase(command.fee);
+      let fee = await this.invoiceAggregateRoot.createFee(feeEntity);
+      
       let data = { company: company, fee: fee };
       let entity = new InvoiceDomainEntityBase(data);
       return this.executeInvoiceAggregateRoot(entity);

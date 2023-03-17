@@ -1,8 +1,14 @@
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  Column,
+  Entity,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
 
-import { BenefitedDomainEntityBase } from '../../../../../../domain/entities/order';
+import {
+  BenefitedDomainEntityBase,
+} from '../../../../../../domain/entities/order';
 
-@Entity()
+@Entity('Benefiteds')
 export class BenefitedMySqlEntity extends BenefitedDomainEntityBase {
   @PrimaryGeneratedColumn('uuid')
   benefitedId: string;

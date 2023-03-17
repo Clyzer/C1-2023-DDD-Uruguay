@@ -9,7 +9,4 @@ export interface ICreateInvoiceCommand {
   fee?: IFeeDomainEntity;
   companyId?: string;
   feeId?: string;
-  createdAt?: number;
-  updatedAt?: number;
-  deletedAt?: number;
 }

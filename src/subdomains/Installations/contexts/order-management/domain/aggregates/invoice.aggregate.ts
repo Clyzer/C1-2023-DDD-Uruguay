@@ -125,13 +125,12 @@ export class InvoiceAggregate
       throw new AggregateRootException(
         'CreatedInvoiceEventPublisherBase is not defined',
       );
-    //let company = await this.companyService.createCompany(invoice.company);
-    //let fee = await this.feeService.createFee(invoice.fee);
-    //invoice.company = company;
-    //invoice.fee = fee;
-    //console.log(invoice);
-    //const result = await this.invoiceService.createInvoice(invoice);
-    const result = invoice;
+    let company = await this.companyService.createCompany(invoice.company);
+    let fee = await this.feeService.createFee(invoice.fee);
+    invoice.company = company;
+    invoice.fee = fee;
+    console.log(invoice);
+    const result = await this.invoiceService.createInvoice(invoice);
     this.createdInvoiceEventPublisherBase.response = result;
     this.createdInvoiceEventPublisherBase.publish();
     return result;

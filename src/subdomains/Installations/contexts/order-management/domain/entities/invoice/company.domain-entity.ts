@@ -19,6 +19,8 @@ export class CompanyDomainEntityBase implements ICompanyDomainEntity {
     if (_data?.companyId) this.companyId = _data.companyId;
     else this.companyId = uuidv4();
 
+    if (_data?.name) this.name = _data.name;
+
     if (_data?.bankAccount) this.bankAccount = _data.bankAccount;
 
     if (_data?.companyId) this.companyId = _data.companyId;
